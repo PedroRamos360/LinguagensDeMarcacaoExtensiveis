@@ -1,0 +1,78 @@
+<filmes>
+    <script/>
+    <script/>
+    <filme id="starwarsIV">
+        <tituloEN>Star Wars</tituloEN>
+        <tituloBR>Guerra nas Estrelas</tituloBR>
+        <genero>Aventura/Ficção Científica</genero>
+        <duracao>121</duracao>
+        <ano>1977</ano>
+        <site>http://www.starwars.com/episode-iv </site>
+        <distribuicao>20th Century Fox Film Corporation</distribuicao>
+        <direcao>George Lucas</direcao>
+        <elenco>Mark Hamill</elenco>
+        <elenco>Harrison Ford</elenco>
+        <elenco>Carrie Fisher</elenco>
+        <sinopse>Luke Skywalker (Mark Hammil) sonha ir para a Academia como seus amigos, mas se vê envolvido em uma guerra intergalática quando seu tio compra dois robôs e com eles encontra uma mensagem da princesa Leia Organa (Carrie Fisher) para o jedi Obi-Wan Kenobi (Alec Guiness) sobre os planos da construção da Estrela da Morte, uma gigantesca estação espacial com capacidade para destruir um planeta. Luke então se junta aos cavaleiros jedi e a Hans Solo (Harrison Ford), um mercenário, e junto com membros da resistência tentam destruir esta terrível ameaça.</sinopse>
+    </filme>
+    <filme id="armageddon">
+        <tituloEN>Armageddon</tituloEN>
+        <tituloBR>Armageddon</tituloBR>
+        <genero>Ficção Científica</genero>
+        <duracao>151</duracao>
+        <ano>1998</ano>
+        <site>http://movies.go.com/armageddon</site>
+        <distribuicao>Buena Vista Pictures / Touchstone Pictures</distribuicao>
+        <direcao>Michael Bay</direcao>
+        <elenco>Bruce Willis</elenco>
+        <elenco>Ben Affleck</elenco>
+        <elencoApoio>Billy Bob Thornton</elencoApoio>
+        <elenco>Liv Tyler</elenco>
+        <sinopse>Após uma chuva de pequenos meteoros que atingem a Terra (incluindo Nova York), a NASA se dá conta de que um asteróide do tamanho do Texas está em um curso de colisão com o nosso planeta. O asteróide se aproxima da Terra à uma velocidade 35.000km/h. e, se o choque acontecer, qualquer forma de vida deixará de existir na Terra, exatamente como o que exterminou os dinossauros 65 milhões de anos atrás. Restando apenas 18 dias para o choque entre a Terra e o asteróide, a única solução possível é enviar astronautas em um ônibus espacial até a superfície do asteróide e lá perfurar 800 pés para colocar um bomba nuclear, detonando-a por controle remoto. Para cumprir tal missão é convocado o mais famoso perfurador de petróleo (Bruce Willis) a grandes profundidades do mundo, que exige formar sua equipe com técnicos que têm um comportamento nada convencional para os padrões do governo. </sinopse>
+    </filme>
+    <filme id="patriota">
+        <tituloEN>The Patriot</tituloEN>
+        <tituloBR>O Patriota</tituloBR>
+        <genero>Drama</genero>
+        <duracao>164</duracao>
+        <ano>2000</ano>
+        <site>http://www.thepatriot.com</site>
+        <distribuicao>Columbia TriStar / Sony Pictures Entertainment</distribuicao>
+        <direcao>Rolland Emmerich</direcao>
+        <elenco>Mel Gibson</elenco>
+        <elenco>Heath Ledger</elenco>
+        <elenco>Joely Richardson</elenco>
+        <elenco>Jason Isaacs</elenco>
+        <sinopse>Benjamin Martin (Mel Gibson) é um herói do violento conflito entre França e Índia. Desde o término da guerra, ele renunciou a luta e resolveu viver em paz com sua família. Mas quando os ingleses levam a guerra da independência americana para dentro de sua casa, Benjamin não vê outra saída a não ser pegar nas armas novamente, desta vez acompanhado por seu filho idealista (Heath Ledger), e liderar uma brava rebelião em uma batalha contra o implacável e equipado exército britânico. Neste processo, ele descobre que o único meio de proteger sua família é lutando pela liberdade da jovem nação.</sinopse>
+    </filme>
+    <filme id="apollo13">
+        <tituloEN>Apollo 13</tituloEN>
+        <tituloBR>Apollo 13</tituloBR>
+        <genero>Drama </genero>
+        <duracao>138</duracao>
+        <ano>1995</ano>
+        <site/>
+        <distribuicao>Universal Pictures / Imagine Entertainment</distribuicao>
+        <direcao>Ron Howard</direcao>
+        <elenco>Tom Hanks</elenco>
+        <elenco>Bill Paxton</elenco>
+        <elenco>Kevin Bacon</elenco>
+        <elenco>Ed Harris</elenco>
+        <sinopse>Três astronautas americanos a caminho de uma missão na Lua sobrevivem à uma explosão, mas precisam retornar rapidamente à Terra para poderem sobreviver, pois correm o risco de ficarem sem oxigênio. Além disto existe o risco de, mesmo retornando, a nave ficar seriamente danificada, por não suportar o imenso calor na reentrada da órbita terrestre.</sinopse>
+    </filme>
+    <filme id="sextosentido">
+        <tituloEN>The Sixth Sense</tituloEN>
+        <tituloBR>O Sexto Sentido</tituloBR>
+        <genero>Suspense</genero>
+        <duracao>106</duracao>
+        <ano>1999</ano>
+        <site>http://www.studio.go.com/movies/sixthsense</site>
+        <distribuicao>Buena Vista International</distribuicao>
+        <direcao>M. Night Shyamalan</direcao>
+        <elenco>Haley Joel Osment</elenco>
+        <elenco>Bruce Willis</elenco>
+        <elencoApoio>Toni Collette</elencoApoio>
+        <elencoApoio>Olivia Williams</elencoApoio>
+        <sinopse>O psicólogo infantil Malcolm Crowe (Bruce Willis) abraça com dedicação o caso de Cole Sear (Haley Joel Osment). O garoto, de 8 anos, tem dificuldades de entrosamento no colégio e vive paralisado de medo. Malcolm, por sua vez, busca se recuperar de um trauma sofrido anos antes, quando um de seus pacientes se suicidou na sua frente.</sinopse>
+    </filme>
+</filmes>

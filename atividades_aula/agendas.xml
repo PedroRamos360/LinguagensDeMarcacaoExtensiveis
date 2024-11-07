@@ -1,0 +1,46 @@
+<agenda>
+    <script/>
+    <script/>
+    <entrada id="e1" tipo="pessoa">
+        <nome>Giovani Rubert Librelotto</nome>
+        <email>giovani@unifra.br</email>
+        <telefone>555-1234</telefone>
+    </entrada>
+    <grupo gid="unifra">
+        <entrada id="e2" tipo="pessoa">
+            <nome>Marcos Cassal</nome>
+            <email>cassal@unifra.br</email>
+            <telefone>555-1235</telefone>
+        </entrada>
+        <entrada id="e3" tipo="pessoa">
+            <nome>Ana Paula Canal</nome>
+            <email>apc@unifra.br</email>
+            <telefone>555-1236</telefone>
+        </entrada>
+        <ref entref="e1"/>
+    </grupo>
+    <entrada id="e4" tipo="empresa">
+        <nome>Lavandaria Tudo Branco</nome>
+        <telefone>555-1212</telefone>
+    </entrada>
+    <entrada id="e5" tipo="pessoa">
+        <nome>José Alves de Castro</nome>
+        <telefone>555-1231</telefone>
+    </entrada>
+    <entrada id="e6" tipo="pessoa">
+        <nome>Giordano Librelotto</nome>
+        <telefone>555-1313</telefone>
+    </entrada>
+    <grupo gid="familia">
+        <entrada id="e7">
+            <nome>Diógenes Librelotto</nome>
+            <telefone>555-1414</telefone>
+        </entrada>
+        <ref entref="e1"/>
+        <ref entref="e6"/>
+        <entrada id="e8">
+            <nome>Bianca Librelotto</nome>
+            <telefone>555-1515</telefone>
+        </entrada>
+    </grupo>
+</agenda>

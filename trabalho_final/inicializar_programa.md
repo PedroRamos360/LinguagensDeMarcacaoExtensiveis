@@ -1,0 +1,13 @@
+# Como rodar programa
+
+1. Instalar MSYS
+2. Rodar `pacman -Syu` no terminal do MSYS
+3. Rodar `pacman -S mingw-w64-ucrt-x86_64-gtk3 mingw-w64-ucrt-x86_64-toolchain` no terminal do MSYS
+4. Abrir terminal do MSYS mingw e navegar para a pasta do projeto
+5. Rodar o seguinte comando para compilar a aplicação
+
+```bash
+gcc main.c -o seu_programa `pkg-config --cflags --libs gtk+-3.0`
+```
+
+6. Rodar a aplicação ainda no terminal minsys com ./seu_programa

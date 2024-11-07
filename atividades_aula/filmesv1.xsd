@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="filmes">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="script" minOccurs="0" maxOccurs="unbounded" />
+                <xs:element name="filme" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="tituloEN" type="xs:string" />
+                            <xs:element name="tituloBR" type="xs:string" />
+                            <xs:element name="genero" type="xs:string" />
+                            <xs:element name="duracao" type="xs:integer" />
+                            <xs:element name="ano" type="xs:integer" />
+                            <xs:element name="site" type="xs:anyURI" minOccurs="0" />
+                            <xs:element name="distribuicao" type="xs:string" />
+                            <xs:element name="direcao" type="xs:string" />
+                            <xs:choice maxOccurs="unbounded">
+                                <xs:element name="elenco" type="xs:string" />
+                                <xs:element name="elencoApoio" type="xs:string" />
+                            </xs:choice>
+                            <xs:element name="sinopse" type="xs:string" />
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="required" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="agenda" type="AgendaType"/>
+
+    <xs:complexType name="AgendaType">
+        <xs:sequence>
+            <xs:element name="script" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="entrada" type="EntradaType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="grupo" type="GrupoType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="EntradaType">
+        <xs:sequence>
+            <xs:element name="nome" type="xs:string"/>
+            <xs:element name="email" type="xs:string" minOccurs="0"/>
+            <xs:element name="telefone" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="tipo" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="GrupoType">
+        <xs:sequence>
+            <xs:element name="entrada" type="EntradaType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ref" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="entref" type="xs:string"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="gid" type="xs:string" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

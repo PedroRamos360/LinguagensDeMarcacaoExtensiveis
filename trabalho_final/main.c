@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include "button_events.h"
 
 static void on_app_activate(GApplication *app, gpointer user_data)
 {
@@ -18,6 +19,11 @@ static void on_app_activate(GApplication *app, gpointer user_data)
     load_button = gtk_button_new_with_label("Carregar NF-e");
     validate_button = gtk_button_new_with_label("Validar NF-e");
     process_button = gtk_button_new_with_label("Processar NF-e");
+
+    // Conecta cada botão à função de callback correspondente
+    g_signal_connect(load_button, "clicked", G_CALLBACK(on_load_button_clicked), NULL);
+    g_signal_connect(validate_button, "clicked", G_CALLBACK(on_validate_button_clicked), NULL);
+    g_signal_connect(process_button, "clicked", G_CALLBACK(on_process_button_clicked), NULL);
 
     gtk_grid_attach(GTK_GRID(grid), load_button, 0, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), validate_button, 1, 0, 1, 1);

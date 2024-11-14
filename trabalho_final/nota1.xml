@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notaFiscal xmlns="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <infNFe Id="NFe12345678901234567890123456789012345678901234" versao="4.00">
+        <ide>
+            <cUF>35</cUF>            <!-- Código da UF (Estado) -->
+            <cNF>12345678</cNF>            <!-- Código Numérico -->
+            <natOp>Venda</natOp>            <!-- Natureza da operação -->
+            <mod>55</mod>            <!-- Modelo de documento (55 = NF-e) -->
+            <serie>1</serie>            <!-- Série da NF -->
+            <nNF>1234</nNF>            <!-- Número da NF -->
+            <dhEmi>2024-11-06T15:30:00-03:00</dhEmi>            <!-- Data e hora de emissão -->
+            <tpNF>1</tpNF>            <!-- Tipo de nota fiscal (1 = Entrada, 2 = Saída) -->
+            <idDest>1</idDest>            <!-- Identificação do destinatário -->
+            <cMunFG>3550308</cMunFG>            <!-- Código do município -->
+        </ide>
+
+        <emit>
+            <CNPJ>12345678000195</CNPJ>            <!-- CNPJ do emitente -->
+            <xNome>Empresa Exemplo LTDA</xNome>            <!-- Nome da empresa -->
+            <enderEmit>
+                <xLgr>Rua Exemplo, 100</xLgr>                <!-- Endereço -->
+                <xBairro>Centro</xBairro>                <!-- Bairro -->
+                <xMun>São Paulo</xMun>                <!-- Município -->
+                <UF>SP</UF>                <!-- Estado -->
+                <CEP>01001000</CEP>                <!-- CEP -->
+            </enderEmit>
+        </emit>
+
+        <dest>
+            <CNPJ>98765432000185</CNPJ>            <!-- CNPJ do destinatário -->
+            <xNome>Cliente Exemplo S.A.</xNome>            <!-- Nome do destinatário -->
+            <enderDest>
+                <xLgr>Avenida Cliente, 200</xLgr>                <!-- Endereço -->
+                <xBairro>Vila Cliente</xBairro>                <!-- Bairro -->
+                <xMun>São Paulo</xMun>                <!-- Município -->
+                <UF>SP</UF>                <!-- Estado -->
+                <CEP>02002000</CEP>                <!-- CEP -->
+            </enderDest>
+        </dest>
+
+        <det nItem="1">
+            <prod>
+                <cProd>1234</cProd>                <!-- Código do produto -->
+                <xProd>Produto Exemplo</xProd>                <!-- Descrição do produto -->
+                <CFOP>5101</CFOP>                <!-- Código Fiscal de Operação e Prestações -->
+                <uCom>un</uCom>                <!-- Unidade de comercialização -->
+                <qCom>10.0000</qCom>                <!-- Quantidade comercializada -->
+                <vUnCom>25.00</vUnCom>                <!-- Valor unitário do produto -->
+                <vProd>250.00</vProd>                <!-- Valor total do produto -->
+            </prod>
+            <imposto>
+                <ICMS>
+                    <ICMS00>
+                        <orig>0</orig>                        <!-- Origem do ICMS -->
+                        <CST>00</CST>                        <!-- Código de Situação Tributária -->
+                        <vBC>250.00</vBC>                        <!-- Valor base do ICMS -->
+                        <pICMS>18.00</pICMS>                        <!-- Alíquota do ICMS -->
+                        <vICMS>45.00</vICMS>                        <!-- Valor do ICMS -->
+                    </ICMS00>
+                </ICMS>
+            </imposto>
+        </det>
+
+        <total>
+            <ICMSTot>
+                <vBC>250.00</vBC>                <!-- Valor base de cálculo do ICMS -->
+                <vICMS>45.00</vICMS>                <!-- Valor do ICMS -->
+                <vICMSDeson>0.00</vICMSDeson>                <!-- Valor de ICMS desonerado -->
+                <vFCP>0.00</vFCP>                <!-- Valor do FCP (Fundo de Combate à Pobreza) -->
+                <vProd>250.00</vProd>                <!-- Valor total dos produtos -->
+                <vFrete>0.00</vFrete>                <!-- Valor do frete -->
+                <vSeg>0.00</vSeg>                <!-- Valor do seguro -->
+                <vDesc>0.00</vDesc>                <!-- Valor do desconto -->
+                <vII>0.00</vII>                <!-- Valor do Imposto de Importação -->
+                <vIPI>0.00</vIPI>                <!-- Valor do Imposto sobre Produtos Industrializados -->
+                <vPIS>0.00</vPIS>                <!-- Valor do PIS -->
+                <vCOFINS>0.00</vCOFINS>                <!-- Valor do COFINS -->
+                <vOutro>0.00</vOutro>                <!-- Outros valores -->
+                <vNF>250.00</vNF>                <!-- Valor total da nota fiscal -->
+            </ICMSTot>
+        </total>
+
+    </infNFe>
+</notaFiscal>

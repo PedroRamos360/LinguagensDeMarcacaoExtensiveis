@@ -7,5 +7,8 @@ SRC=core.c
 $(TARGET): $(SRC)
 	$(CC) $(SRC) -o $(TARGET) $(CFLAGS) $(LIBS)
 
+test:
+	$(CC) test.c -o test $(CFLAGS) $(LIBS)
+
 clean:
-	rm -f $(TARGET).exe
+	rm -f $(TARGET).exe test.exe

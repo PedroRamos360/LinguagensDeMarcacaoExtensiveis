@@ -11,7 +11,7 @@
 
 ```bash
 export PATH=/ucrt64/bin:$PATH
-gcc main.c -o main `pkg-config --cflags --libs gtk+-3.0`
+make
 ```
 
 Rodar a aplicação ainda no terminal minsys com ./main

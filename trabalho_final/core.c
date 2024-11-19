@@ -1,95 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <jansson.h>
 
-// Recursive function to convert XML node to JSON
-static json_t *xml_to_json(xmlNode *node)
+void xml_to_json(xmlNode *node, json_t *json_obj)
 {
-    json_t *json_obj = json_object();
-
-    for (xmlNode *cur_node = node; cur_node; cur_node = cur_node->next)
+    char *last_element_name;
+    for (xmlNode *current = node; current; current = current->next)
     {
-        if (cur_node->type == XML_ELEMENT_NODE)
+        if (current->type == XML_ELEMENT_NODE)
         {
-            json_t *child_obj;
+            last_element_name = (char *)current->name;
+            json_t *child_obj = json_object();
 
-            // Handle element attributes
-            if (cur_node->properties)
+            // Add attributes of the current node to child_obj
+            for (xmlAttr *attr = current->properties; attr; attr = attr->next)
             {
-                json_t *attr_obj = json_object();
-                for (xmlAttr *attr = cur_node->properties; attr; attr = attr->next)
-                {
-                    json_object_set_new(attr_obj, (const char *)attr->name,
-                                        json_string((const char *)xmlNodeGetContent(attr->children)));
-                }
-                json_object_set_new(json_obj, "_attributes", attr_obj);
+                xmlChar *value = xmlNodeListGetString(current->doc, attr->children, 1);
+                json_object_set_new(child_obj, (const char *)attr->name, json_string((const char *)value));
+                xmlFree(value);
             }
 
-            // Recurse for child elements
-            if (cur_node->children)
+            // Check if this element should be an array or an object
+            json_t *existing = json_object_get(json_obj, (const char *)current->name);
+            printf("Element: %s\n", current->name);
+            if (existing && json_is_array(existing))
             {
-                child_obj = xml_to_json(cur_node->children);
+                // Add new child to the existing array
+                json_array_append_new(existing, child_obj);
+            }
+            else if (existing)
+            {
+                // Convert the single object to an array and add new child
+                json_t *array = json_array();
+                json_array_append_new(array, existing);
+                json_array_append_new(array, child_obj);
+                json_object_set_new(json_obj, (const char *)current->name, array);
             }
             else
             {
-                child_obj = json_string((const char *)xmlNodeGetContent(cur_node));
+                // Initialize a new array for this element and add the first child
+                json_t *array = json_array();
+                json_array_append_new(array, child_obj);
+                json_object_set_new(json_obj, (const char *)current->name, array);
             }
 
-            // Append the child JSON object
-            json_object_set_new(json_obj, (const char *)cur_node->name, child_obj);
+            // Handle nested elements
+            if (current->children)
+            {
+                xml_to_json(current->children, child_obj);
+            }
+        }
+        else if (current->type == XML_TEXT_NODE && current->content)
+        {
+            printf("Content: %s\n", current->content);
+            if (json_object_get(json_obj, last_element_name))
+            {
+                json_object_set_new(json_obj, last_element_name, json_string(current->content));
+            }
         }
     }
-
-    return json_obj;
 }
 
-int convert_xml_to_json(const char *xml_file, const char *json_file)
+int main(int argc, char **argv)
 {
-    xmlDocPtr doc = xmlParseFile(xml_file);
+    xmlDoc *doc = xmlReadFile("input.xml", NULL, 0);
     if (doc == NULL)
     {
-        fprintf(stderr, "Failed to parse XML file.\n");
+        fprintf(stderr, "Failed to parse XML\n");
         return 1;
     }
-
-    xmlNode *root = xmlDocGetRootElement(doc);
-    if (root == NULL)
-    {
-        fprintf(stderr, "Empty XML document.\n");
-        xmlFreeDoc(doc);
-        return 1;
-    }
-
-    // Convert XML to JSON
-    json_t *json_root = xml_to_json(root);
-
-    // Write JSON to file
-    if (json_dump_file(json_root, json_file, JSON_INDENT(4)) != 0)
-    {
-        fprintf(stderr, "Failed to write JSON file.\n");
-        json_decref(json_root);
-        xmlFreeDoc(doc);
-        return 1;
-    }
-
-    json_decref(json_root);
-    xmlFreeDoc(doc);
-    return 0;
-}
-
-int main()
-{
-    const char *xml_file = "example.xml";
-    const char *json_file = "output.json";
-
-    if (convert_xml_to_json(xml_file, json_file) == 0)
-    {
-        printf("XML successfully converted to JSON.\n");
-    }
-    else
-    {
-        printf("Failed to convert XML to JSON.\n");
-    }
-
-    return 0;
+    xmlNode *root_element = xmlDocGetRootElement(doc);
+    printf("Root Node: %s\n", root_element->name);
+    json_t *json_obj = json_object();
+    xml_to_json(root_element, json_obj);
+    printf("JSON:\n%s\n", json_dumps(json_obj, JSON_INDENT(4)));
 }

@@ -9,12 +9,16 @@
 
 static void on_load_button_clicked(GtkWidget *widget, gpointer data)
 {
+    GtkWidget *text_view = GTK_WIDGET(data);
     GtkWidget *dialog;
     gchar *file_path;
     xmlDocPtr doc;
+    xmlChar *xml_content;
+    int xml_size;
+    GtkTextBuffer *buffer;
     g_print("Carregar NF-e clicked!\n");
     dialog = gtk_file_chooser_dialog_new("Abrir Arquivo XML",
-                                         GTK_WINDOW(data),
+                                         GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                          GTK_FILE_CHOOSER_ACTION_OPEN,
                                          "_Cancelar", GTK_RESPONSE_CANCEL,
                                          "_Abrir", GTK_RESPONSE_ACCEPT,
@@ -31,6 +35,11 @@ static void on_load_button_clicked(GtkWidget *widget, gpointer data)
         else
         {
             g_print("XML carregado com sucesso!\n");
+            xmlDocDumpFormatMemory(doc, &xml_content, &xml_size, 1);
+            g_print("Conteudo do XML:\n%s\n", (char *)xml_content);
+            buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+            gtk_text_buffer_set_text(buffer, (const gchar *)xml_content, xml_size);
+            xmlFree(xml_content);
             xmlFreeDoc(doc);
         }
         g_free(file_path);

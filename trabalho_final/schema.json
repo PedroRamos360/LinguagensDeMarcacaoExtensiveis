@@ -1,0 +1,154 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "filmes": {
+        "type": "object",
+        "properties": {
+          "script": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "filme": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "@id": {
+                  "type": "string"
+                },
+                "tituloEN": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                },
+                "tituloBR": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                },
+                "genero": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                },
+                "duracao": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                },
+                "ano": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                },
+                "site": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": []
+                },
+                "distribuicao": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                },
+                "direcao": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                },
+                "elenco": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "#text": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["#text"]
+                  }
+                },
+                "elencoApoio": {
+                  "type": ["object", "array"],
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "#text": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["#text"]
+                  },
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "sinopse": {
+                  "type": "object",
+                  "properties": {
+                    "#text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["#text"]
+                }
+              },
+              "required": [
+                "@id",
+                "tituloEN",
+                "tituloBR",
+                "genero",
+                "duracao",
+                "ano",
+                "distribuicao",
+                "direcao",
+                "elenco",
+                "ticomole",
+                "sinopse"
+              ]
+            }
+          }
+        },
+        "required": ["script", "filme"]
+      }
+    },
+    "required": ["filmes"]
+  }
+  

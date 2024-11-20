@@ -5,20 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *read_file_to_string(const char *filename)
-{
-    FILE *file = fopen(filename, "r");
-    if (!file)
-        return NULL;
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    rewind(file);
-    char *content = malloc(size + 1);
-    fread(content, 1, size, file);
-    fclose(file);
-    return content ? (content[size] = '\0', content) : NULL;
-}
-
 void add_attributes_to_json(xmlNode *node, json_t *json_obj)
 {
     xmlAttr *attr;
@@ -68,7 +54,7 @@ void traverse_node(xmlNode *node, json_t *json_obj)
     }
 }
 
-char *xml2json(const char *xml_str)
+char *xml_to_json(const char *xml_str)
 {
     xmlDoc *doc = xmlReadMemory(xml_str, strlen(xml_str), "noname.xml", NULL, 0);
     if (doc == NULL)
@@ -84,28 +70,4 @@ char *xml2json(const char *xml_str)
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return result;
-}
-
-int main()
-{
-    const char *xml_str = read_file_to_string("input.xml");
-    xmlDoc *doc = xmlReadMemory(xml_str, strlen(xml_str), "noname.xml", NULL, 0);
-    if (doc == NULL)
-    {
-        fprintf(stderr, "Failed to parse XML\n");
-        return 1;
-    }
-    xmlNode *root_element = xmlDocGetRootElement(doc);
-    json_t *json_obj = json_object();
-    traverse_node(root_element, json_obj);
-    char *result = json_dumps(json_obj, JSON_INDENT(4));
-    if (result)
-    {
-        printf("%s\n", result);
-        free(result);
-    }
-    json_decref(json_obj);
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
-    return 0;
 }

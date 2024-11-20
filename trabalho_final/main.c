@@ -6,7 +6,7 @@ static void on_app_activate(GApplication *app, gpointer user_data)
     GtkWidget *window;
     GtkWidget *grid;
     GtkWidget *load_button;
-    GtkWidget *validate_button;
+    GtkWidget *convert_json_button;
     GtkWidget *process_button;
     GtkWidget *text_view;
     GtkWidget *scrolled_window;
@@ -20,7 +20,7 @@ static void on_app_activate(GApplication *app, gpointer user_data)
     gtk_container_add(GTK_CONTAINER(window), grid);
 
     load_button = gtk_button_new_with_label("Carregar NF-e");
-    validate_button = gtk_button_new_with_label("Validar NF-e");
+    convert_json_button = gtk_button_new_with_label("Converter NF-e para JSON");
     process_button = gtk_button_new_with_label("Processar NF-e");
 
     text_view = gtk_text_view_new();
@@ -33,11 +33,11 @@ static void on_app_activate(GApplication *app, gpointer user_data)
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
     g_signal_connect(load_button, "clicked", G_CALLBACK(on_load_button_clicked), text_view);
-    g_signal_connect(validate_button, "clicked", G_CALLBACK(on_validate_button_clicked), NULL);
+    g_signal_connect(convert_json_button, "clicked", G_CALLBACK(on_convert_button_clicked), text_view);
     g_signal_connect(process_button, "clicked", G_CALLBACK(on_process_button_clicked), NULL);
 
     gtk_grid_attach(GTK_GRID(grid), load_button, 0, 0, 2, 1);
-    gtk_grid_attach(GTK_GRID(grid), validate_button, 4, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), convert_json_button, 4, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), process_button, 8, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 2, 10, 1);
 

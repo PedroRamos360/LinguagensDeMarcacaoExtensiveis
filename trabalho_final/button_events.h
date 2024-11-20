@@ -6,6 +6,9 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <libxml/parser.h>
+#include "xml_to_json.h"
+
+xmlChar *xml_content;
 
 static void on_load_button_clicked(GtkWidget *widget, gpointer data)
 {
@@ -13,7 +16,6 @@ static void on_load_button_clicked(GtkWidget *widget, gpointer data)
     GtkWidget *dialog;
     gchar *file_path;
     xmlDocPtr doc;
-    xmlChar *xml_content;
     int xml_size;
     GtkTextBuffer *buffer;
     g_print("Carregar NF-e clicked!\n");
@@ -36,10 +38,19 @@ static void on_load_button_clicked(GtkWidget *widget, gpointer data)
         {
             g_print("XML carregado com sucesso!\n");
             xmlDocDumpFormatMemory(doc, &xml_content, &xml_size, 1);
-            g_print("Conteudo do XML:\n%s\n", (char *)xml_content);
-            buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-            gtk_text_buffer_set_text(buffer, (const gchar *)xml_content, xml_size);
-            xmlFree(xml_content);
+            gchar *content_str = (gchar *)xml_content;
+            gchar *new_content = g_strstr_len(content_str, xml_size, "\n");
+            if (new_content != NULL)
+            {
+                new_content++;
+                buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+                gtk_text_buffer_set_text(buffer, new_content, strlen(new_content));
+            }
+            else
+            {
+                buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+                gtk_text_buffer_set_text(buffer, content_str, xml_size);
+            }
             xmlFreeDoc(doc);
         }
         g_free(file_path);
@@ -48,9 +59,19 @@ static void on_load_button_clicked(GtkWidget *widget, gpointer data)
     gtk_widget_destroy(dialog);
 }
 
-static void on_validate_button_clicked(GtkWidget *widget, gpointer data)
+static void on_convert_button_clicked(GtkWidget *widget, gpointer data)
 {
-    g_print("Validar NF-e clicked!\n");
+    char *json_str;
+    g_print("Converter NF-e para JSON clicked!\n");
+    printf("XML:\n%s\n", (const char *)xml_content);
+    json_str = xml_to_json((const char *)xml_content);
+
+    GtkWidget *text_view = GTK_WIDGET(data);
+    GtkTextBuffer *buffer;
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, json_str, strlen(json_str));
+
+    printf("JSON:\n%s\n", json_str);
 }
 
 static void on_process_button_clicked(GtkWidget *widget, gpointer data)

@@ -1,6 +1,5 @@
-# Como rodar programa
+# Como rodar programa 1. Instalar MSYS
 
-1. Instalar MSYS
 2. Rodar `pacman -Syu` no terminal do MSYS
 3. Rodar `pacman -S mingw-w64-ucrt-x86_64-gtk3 mingw-w64-ucrt-x86_64-toolchain` no terminal do MSYS
 4. Rodar `pacman -S mingw-w64-x86_64-hicolor-icon-theme`

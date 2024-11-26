@@ -128,7 +128,7 @@ int validate_json_recursive(struct json_object *instance, struct json_object *sc
         //         }
         //     }
         // }
-        // else if (strcmp(key, "required") == 0)
+        else if (strcmp(key, "required") == 0)
         {
             struct json_object *required = value;
             int len = json_object_array_length(required);
@@ -151,8 +151,9 @@ int validate_json_recursive(struct json_object *instance, struct json_object *sc
     return 1;
 }
 
-int validate_json(const char *instance_str, const char *schema_str, const char *content)
+int validate_json(const char *instance_str, const char *schema_str)
 {
+    const char *content = strdup(instance_str);
     struct json_tokener *tokener = json_tokener_new();
     if (!tokener)
     {
@@ -160,7 +161,6 @@ int validate_json(const char *instance_str, const char *schema_str, const char *
         return 0;
     }
 
-    // Strict parsing for instance
     struct json_object *instance = json_tokener_parse_ex(tokener, instance_str, strlen(instance_str));
     if (json_tokener_get_error(tokener) != json_tokener_success)
     {
@@ -169,7 +169,6 @@ int validate_json(const char *instance_str, const char *schema_str, const char *
         return 0;
     }
 
-    // Strict parsing for schema
     struct json_object *schema = json_tokener_parse_ex(tokener, schema_str, strlen(schema_str));
     if (json_tokener_get_error(tokener) != json_tokener_success)
     {
@@ -188,35 +187,4 @@ int validate_json(const char *instance_str, const char *schema_str, const char *
     }
 
     return result;
-}
-
-int main()
-{
-    const char *instance_file = "input.json";
-    const char *schema_file = "schema.json";
-
-    char *instance_str = read_file(instance_file);
-    char *schema_str = read_file(schema_file);
-
-    if (!instance_str || !schema_str)
-    {
-        print_error_with_line("Failed to read input or schema files.", -1, "");
-        free(instance_str);
-        free(schema_str);
-        return 1;
-    }
-
-    int result = validate_json(instance_str, schema_str, instance_str);
-    if (!result)
-    {
-        print_error_with_line("Validation failed.", -1, instance_str);
-    }
-    else
-    {
-        print_success("Validation succeeded.");
-    }
-
-    free(instance_str);
-    free(schema_str);
-    return 0;
 }

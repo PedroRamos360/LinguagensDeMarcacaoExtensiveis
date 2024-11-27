@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "properties": {
+    "university": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "established": { "type": "integer" },
+        "departments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "head": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "integer" },
+                  "name": { "type": "string" }
+                },
+                "required": ["id", "name"]
+              },
+              "courses": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "course_id": { "type": "integer" },
+                    "course_name": { "type": "string" },
+                    "credits": { "type": "integer" }
+                  },
+                  "required": ["course_id", "course_name", "credits"]
+                }
+              }
+            },
+            "required": ["name", "head", "courses"]
+          }
+        }
+      },
+      "required": ["name", "established", "departments"]
+    }
+  },
+  "required": ["university"]
+}

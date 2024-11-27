@@ -7,8 +7,8 @@ SRC=main.c
 $(TARGET): $(SRC)
 	$(CC) $(SRC) -o $(TARGET) $(CFLAGS) $(LIBS)
 
-validate: validate_json.c
-	$(CC) validate_json.c -o validate $(CFLAGS) $(LIBS)
+test: tests/validate_json.c
+	$(CC) tests/validate_json.c -o test $(CFLAGS) $(LIBS)
 
 clean:
-	rm -f $(TARGET).exe test.exe validate.exe
+	rm -f $(TARGET).exe test.exe 

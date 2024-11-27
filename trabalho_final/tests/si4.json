@@ -1,0 +1,35 @@
+{
+  "company": {
+    "name": "TechCorp",
+    "founded": 1999,
+    "employees": [
+      {
+        "id": 1,
+        "name": "Alice",
+        "position": "Software Engineer",
+        "details": {
+          "salary": 120000,
+          "skills": ["JavaScript", "Python", "AWS"]
+        }
+      },
+      {
+        "id": 2,
+        "name": "Bob",
+        "position": "Product Manager",
+        "details": {
+          "salary": 100000,
+          "skills": ["Leadership", "Agile", "Scrum"]
+        }
+      },
+      {
+        "id": 3,
+        "name": "Charlie",
+        "position": "Data Scientist",
+        "details": {
+          "salary": 110000,
+          "skills": ["Python", "R", "SQL"]
+        }
+      }
+    ]
+  }
+}

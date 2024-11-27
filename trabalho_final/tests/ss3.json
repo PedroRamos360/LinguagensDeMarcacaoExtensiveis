@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "details": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "string" },
+            "phone": { "type": "string" }
+          },
+          "required": ["email"]
+        }
+      },
+      "required": ["id", "details"]
+    }
+  },
+  "required": ["user"]
+}

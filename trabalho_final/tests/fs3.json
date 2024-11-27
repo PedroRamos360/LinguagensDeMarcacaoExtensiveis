@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "book": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "details": {
+          "type": "object",
+          "properties": {
+            "pages": { "type": "integer" },
+            "publisher": { "type": "string" }
+          },
+          "required": ["pages", "publisher"]
+        }
+      },
+      "required": ["title", "author", "details"]
+    }
+  },
+  "required": ["book"]
+}

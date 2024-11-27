@@ -1,0 +1,39 @@
+{
+  "university": {
+    "name": "Global University",
+    "established": 1870,
+    "departments": [
+      {
+        "name": "Computer Science",
+        "head": {
+          "id": 1,
+          "name": "Dr. Smith"
+        },
+        "courses": [
+          {
+            "course_id": 101,
+            "course_name": "Introduction to Programming",
+            "credits": 3
+          },
+          {
+            "course_id": 102,
+            "credits": 3
+          }
+        ]
+      },
+      {
+        "name": "Mathematics",
+        "head": {
+          "id": 2
+        },
+        "courses": [
+          {
+            "course_id": 201,
+            "course_name": "Calculus",
+            "credits": 4
+          }
+        ]
+      }
+    ]
+  }
+}

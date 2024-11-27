@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "company": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "founded": { "type": "integer" },
+        "employees": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "position": { "type": "string" },
+              "details": {
+                "type": "object",
+                "properties": {
+                  "salary": { "type": "number" },
+                  "skills": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                },
+                "required": ["salary", "skills"]
+              }
+            },
+            "required": ["id", "name", "position", "details"]
+          }
+        }
+      },
+      "required": ["name", "founded", "employees"]
+    }
+  },
+  "required": ["company"]
+}

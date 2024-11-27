@@ -1,9 +1,7 @@
+#include <jansson.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <json-c/json.h>
-#include <json-c/json_tokener.h>
-#include <json-c/linkhash.h>
 
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_GREEN "\x1b[32m"
@@ -27,9 +25,14 @@ void print_success(const char *message)
     printf("%s%s%s\n", ANSI_COLOR_GREEN, message, ANSI_COLOR_RESET);
 }
 
+void print_failure(const char *message)
+{
+    printf("%s%s%s\n", ANSI_COLOR_RED, message, ANSI_COLOR_RESET);
+}
+
 char *read_file(const char *filename)
 {
-    FILE *file = fopen(filename, "r");
+    FILE *file = fopen(filename, "rb");
     if (!file)
     {
         perror("Error opening file");
@@ -38,6 +41,12 @@ char *read_file(const char *filename)
 
     fseek(file, 0, SEEK_END);
     long length = ftell(file);
+    if (length < 0)
+    {
+        perror("Error determining file size");
+        fclose(file);
+        return NULL;
+    }
     fseek(file, 0, SEEK_SET);
 
     char *content = (char *)malloc(length + 1);
@@ -48,99 +57,122 @@ char *read_file(const char *filename)
         return NULL;
     }
 
-    fread(content, 1, length, file);
-    content[length] = '\0';
+    size_t read_size = fread(content, 1, length, file);
+    if (read_size != (size_t)length)
+    {
+        fprintf(stderr, "Error: Could not read the entire file. Expected %ld bytes, got %zu bytes.\n", length, read_size);
+        free(content);
+        fclose(file);
+        return NULL;
+    }
 
+    content[length] = '\0';
     fclose(file);
     return content;
 }
 
-int validate_json_recursive(struct json_object *instance, struct json_object *schema, const char *content)
+int validate_json_recursive(json_t *instance, json_t *schema, const char *content)
 {
-    struct lh_table *schema_table = json_object_get_object(schema);
-    struct lh_entry *entry;
+    const char *key;
+    json_t *value;
 
-    lh_foreach(schema_table, entry)
+    json_object_foreach(schema, key, value)
     {
-        const char *key = (const char *)entry->k;
-        struct json_object *value = (struct json_object *)entry->v;
-
         if (strcmp(key, "type") == 0)
         {
-            const char *expected_type = json_object_get_string(value);
+            const char *expected_type = json_string_value(value);
 
-            enum json_type instance_type = json_object_get_type(instance);
-            if ((strcmp(expected_type, "object") == 0 && instance_type != json_type_object) ||
-                (strcmp(expected_type, "array") == 0 && instance_type != json_type_array) ||
-                (strcmp(expected_type, "string") == 0 && instance_type != json_type_string) ||
-                (strcmp(expected_type, "number") == 0 && instance_type != json_type_double && instance_type != json_type_int))
+            if (!expected_type)
+            {
+                print_error_with_line("Invalid schema type definition.", 0, content);
+                return 0;
+            }
+
+            // Type checking logic
+            if ((strcmp(expected_type, "object") == 0 && !json_is_object(instance)) ||
+                (strcmp(expected_type, "array") == 0 && !json_is_array(instance)) ||
+                (strcmp(expected_type, "string") == 0 && !json_is_string(instance)) ||
+                (strcmp(expected_type, "integer") == 0 && !json_is_integer(instance)) ||
+                (strcmp(expected_type, "number") == 0 && !json_is_number(instance)))
             {
                 char error_message[256];
                 snprintf(error_message, sizeof(error_message),
                          "Type mismatch: Expected %s, but got %s.",
                          expected_type,
-                         json_type_to_name(instance_type));
+                         json_typeof(instance) == JSON_OBJECT ? "object" : json_typeof(instance) == JSON_ARRAY                                     ? "array"
+                                                                       : json_typeof(instance) == JSON_STRING                                      ? "string"
+                                                                       : json_typeof(instance) == JSON_INTEGER                                     ? "integer"
+                                                                       : json_typeof(instance) == JSON_REAL                                        ? "number"
+                                                                       : json_typeof(instance) == JSON_TRUE || json_typeof(instance) == JSON_FALSE ? "boolean"
+                                                                                                                                                   : "unknown");
                 print_error_with_line(error_message, 0, content);
                 return 0;
             }
         }
         else if (strcmp(key, "properties") == 0)
         {
-            if (json_object_get_type(instance) != json_type_object)
+            if (!json_is_object(instance))
             {
                 print_error_with_line("Expected an object for validating properties.", 0, content);
                 return 0;
             }
-            struct json_object *properties = value;
-            struct lh_table *properties_table = json_object_get_object(properties);
-            struct lh_entry *prop_entry;
 
-            lh_foreach(properties_table, prop_entry)
+            json_t *properties = value;
+            const char *prop_key;
+            json_t *prop_schema;
+
+            json_object_foreach(properties, prop_key, prop_schema)
             {
-                const char *prop_key = (const char *)prop_entry->k;
-                struct json_object *prop_schema = (struct json_object *)prop_entry->v;
-
-                struct json_object *prop_value;
-                if (json_object_object_get_ex(instance, prop_key, &prop_value))
+                json_t *prop_value = json_object_get(instance, prop_key);
+                if (prop_value)
                 {
                     if (!validate_json_recursive(prop_value, prop_schema, content))
                     {
-                        return 0;
+                        return 0; // Propagate failure
                     }
                 }
             }
         }
-        // Código problemático: consertar
-        // else if (strcmp(key, "items") == 0)
-        // {
-        //     if (json_object_get_type(instance) != json_type_array)
-        //     {
-        //         print_error_with_line("Expected an array for validating items.", 0, content);
-        //         return 0;
-        //     }
-        //     int array_len = json_object_array_length(instance);
-        //     for (int i = 0; i < array_len; i++)
-        //     {
-        //         struct json_object *item = json_object_array_get_idx(instance, i);
-        //         if (!validate_json_recursive(item, value, content))
-        //         {
-        //             return 0;
-        //         }
-        //     }
-        // }
         else if (strcmp(key, "required") == 0)
         {
-            struct json_object *required = value;
-            int len = json_object_array_length(required);
-            for (int i = 0; i < len; i++)
+            if (!json_is_array(value))
             {
-                const char *required_key = json_object_get_string(json_object_array_get_idx(required, i));
-                struct json_object *required_value;
-                if (!json_object_object_get_ex(instance, required_key, &required_value))
+                print_error_with_line("Invalid schema: 'required' must be an array.", 0, content);
+                return 0;
+            }
+
+            size_t index;
+            json_t *required_key;
+            json_array_foreach(value, index, required_key)
+            {
+                const char *required_key_str = json_string_value(required_key);
+                if (!json_object_get(instance, required_key_str))
                 {
                     char error_message[256];
                     snprintf(error_message, sizeof(error_message),
-                             "Missing required property: %s.", required_key);
+                             "Missing required property: %s.", required_key_str);
+                    print_error_with_line(error_message, 0, content);
+                    return 0;
+                }
+            }
+        }
+        else if (strcmp(key, "items") == 0)
+        {
+            if (!json_is_array(instance))
+            {
+                print_error_with_line("Expected an array for validating items.", 0, content);
+                return 0;
+            }
+
+            size_t index;
+            json_t *item;
+            json_array_foreach(instance, index, item)
+            {
+                if (!validate_json_recursive(item, value, content))
+                {
+                    char error_message[256];
+                    snprintf(error_message, sizeof(error_message),
+                             "Validation failed for array item at index %zu.", index);
                     print_error_with_line(error_message, 0, content);
                     return 0;
                 }
@@ -153,33 +185,36 @@ int validate_json_recursive(struct json_object *instance, struct json_object *sc
 
 int validate_json(const char *instance_str, const char *schema_str)
 {
-    const char *content = strdup(instance_str);
-    struct json_tokener *tokener = json_tokener_new();
-    if (!tokener)
+    char *content = strdup(instance_str);
+    if (!content)
     {
-        print_error_with_line("Failed to create JSON tokener.", -1, content);
+        fprintf(stderr, "Failed to duplicate input content.\n");
         return 0;
     }
 
-    struct json_object *instance = json_tokener_parse_ex(tokener, instance_str, strlen(instance_str));
-    if (json_tokener_get_error(tokener) != json_tokener_success)
+    json_error_t error;
+    json_t *instance = json_loads(instance_str, 0, &error);
+    if (!instance)
     {
-        print_error_with_line(json_tokener_error_desc(json_tokener_get_error(tokener)), tokener->char_offset, content);
-        json_tokener_free(tokener);
+        print_error_with_line(error.text, error.position, content);
+        free(content);
         return 0;
     }
 
-    struct json_object *schema = json_tokener_parse_ex(tokener, schema_str, strlen(schema_str));
-    if (json_tokener_get_error(tokener) != json_tokener_success)
+    json_t *schema = json_loads(schema_str, 0, &error);
+    if (!schema)
     {
-        print_error_with_line(json_tokener_error_desc(json_tokener_get_error(tokener)), tokener->char_offset, content);
-        json_tokener_free(tokener);
+        print_error_with_line(error.text, error.position, content);
+        json_decref(instance);
+        free(content);
         return 0;
     }
 
     int result = validate_json_recursive(instance, schema, content);
 
-    json_tokener_free(tokener);
+    json_decref(instance);
+    json_decref(schema);
+    free(content);
 
     if (result)
     {

@@ -1,0 +1,9 @@
+{
+  "book": {
+    "title": "A Great Book",
+    "author": "John Doe",
+    "details": {
+      "pages": 300
+    }
+  }
+}

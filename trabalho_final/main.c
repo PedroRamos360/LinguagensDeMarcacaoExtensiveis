@@ -1,5 +1,18 @@
 #include <gtk/gtk.h>
 #include "button_events.h"
+#include "dashboard.h"
+
+static void on_dashboard_button_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkWidget *window = GTK_WIDGET(user_data);
+
+    GtkWidget *dashboard_view = create_dashboard_view(window);
+
+    gtk_container_remove(GTK_CONTAINER(window), gtk_bin_get_child(GTK_BIN(window)));
+    gtk_container_add(GTK_CONTAINER(window), dashboard_view);
+
+    gtk_widget_show_all(window);
+}
 
 static void on_app_activate(GApplication *app, gpointer user_data)
 {
@@ -13,6 +26,7 @@ static void on_app_activate(GApplication *app, gpointer user_data)
     GtkWidget *scrolled_window;
     GtkWidget *hbox;
     GtkWidget *load_schema;
+    GtkWidget *dashboard_button;
 
     window = gtk_application_window_new(GTK_APPLICATION(app));
     gtk_window_set_title(GTK_WINDOW(window), "Portal de Análise de NF-e");
@@ -25,6 +39,7 @@ static void on_app_activate(GApplication *app, gpointer user_data)
     load_button = gtk_button_new_with_label("Carregar NF-e");
     load_schema = gtk_button_new_with_label("Carregar Schema");
     convert_json_button = gtk_button_new_with_label("Converter NF-e para JSON");
+    dashboard_button = gtk_button_new_with_label("Dashboard");
     validate_button = gtk_button_new_with_label("Validar");
 
     text_view = gtk_text_view_new();
@@ -56,10 +71,12 @@ static void on_app_activate(GApplication *app, gpointer user_data)
     g_signal_connect(convert_json_button, "clicked", G_CALLBACK(on_convert_button_clicked), text_view);
     g_signal_connect(load_schema, "clicked", G_CALLBACK(on_load_schema_clicked), schema_view);
     g_signal_connect(validate_button, "clicked", G_CALLBACK(on_validate_button_clicked), schema_view);
+    g_signal_connect(dashboard_button, "clicked", G_CALLBACK(on_dashboard_button_clicked), window);
 
     gtk_grid_attach(GTK_GRID(grid), load_button, 0, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), load_schema, 2, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), convert_json_button, 4, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), dashboard_button, 6, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), validate_button, 8, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 2, 10, 1);
 

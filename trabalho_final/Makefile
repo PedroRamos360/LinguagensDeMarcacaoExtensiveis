@@ -10,5 +10,8 @@ $(TARGET): $(SRC)
 test: tests/validate_json.c
 	$(CC) tests/validate_json.c -o test $(CFLAGS) $(LIBS)
 
+dashboard: dashboard.c
+	$(CC) dashboard.c -o dashboard $(CFLAGS) $(LIBS)
+
 clean:
-	rm -f $(TARGET).exe test.exe 
+	rm -f $(TARGET).exe test.exe  dashboard.exe

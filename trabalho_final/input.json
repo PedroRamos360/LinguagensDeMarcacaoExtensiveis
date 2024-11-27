@@ -1,227 +1,224 @@
 {
-    "filmes": {
-        "script": [
-            {},
-            {}
+  "filmes": {
+    "script": [{}, {}],
+    "filme": [
+      {
+        "@id": "starwarsIV",
+        "tituloEN": {
+          "#text": "Star Wars"
+        },
+        "tituloBR": {
+          "#text": "Guerra nas Estrelas"
+        },
+        "genero": {
+          "#text": "Aventura/Ficção Científica"
+        },
+        "duracao": {
+          "#text": "121"
+        },
+        "ano": {
+          "#text": "1977"
+        },
+        "site": {
+          "#text": "http://www.starwars.com/episode-iv "
+        },
+        "distribuicao": {
+          "#text": "20th Century Fox Film Corporation"
+        },
+        "direcao": {
+          "#text": "George Lucas"
+        },
+        "elenco": [
+          {
+            "#text": "Mark Hamill"
+          },
+          {
+            "#text": "Harrison Ford"
+          },
+          {
+            "#text": "Carrie Fisher"
+          }
         ],
-        "filme": [
-            {
-                "@id": "starwarsIV",
-                "tituloEN": {
-                    "#text": "Star Wars"
-                },
-                "tituloBR": {
-                    "#text": "Guerra nas Estrelas"
-                },
-                "genero": {
-                    "#text": "Aventura/Ficção Científica"
-                },
-                "duracao": {
-                    "#text": "121"
-                },
-                "ano": {
-                    "#text": "1977"
-                },
-                "site": {
-                    "#text": "http://www.starwars.com/episode-iv "
-                },
-                "distribuicao": {
-                    "#text": "20th Century Fox Film Corporation"
-                },
-                "direcao": {
-                    "#text": "George Lucas"
-                },
-                "elenco": [
-                    {
-                        "#text": "Mark Hamill"
-                    },
-                    {
-                        "#text": "Harrison Ford"
-                    },
-                    {
-                        "#text": "Carrie Fisher"
-                    }
-                ],
-                "sinopse": {
-                    "#text": "Luke Skywalker (Mark Hammil) sonha ir para a Academia como seus amigos, mas se vê envolvido em uma guerra intergalática quando seu tio compra dois robôs e com eles encontra uma mensagem da princesa Leia Organa (Carrie Fisher) para o jedi Obi-Wan Kenobi (Alec Guiness) sobre os planos da construção da Estrela da Morte, uma gigantesca estação espacial com capacidade para destruir um planeta. Luke então se junta aos cavaleiros jedi e a Hans Solo (Harrison Ford), um mercenário, e junto com membros da resistência tentam destruir esta terrível ameaça."
-                }
-            },
-            {
-                "@id": "armageddon",
-                "tituloEN": {
-                    "#text": "Armageddon"
-                },
-                "tituloBR": {
-                    "#text": "Armageddon"
-                },
-                "genero": {
-                    "#text": "Ficção Científica"
-                },
-                "duracao": {
-                    "#text": "151"
-                },
-                "ano": {
-                    "#text": "1998"
-                },
-                "site": {
-                    "#text": "http://movies.go.com/armageddon"
-                },
-                "distribuicao": {
-                    "#text": "Buena Vista Pictures / Touchstone Pictures"
-                },
-                "direcao": {
-                    "#text": "Michael Bay"
-                },
-                "elenco": [
-                    {
-                        "#text": "Bruce Willis"
-                    },
-                    {
-                        "#text": "Ben Affleck"
-                    },
-                    {
-                        "#text": "Liv Tyler"
-                    }
-                ],
-                "elencoApoio": {
-                    "#text": "Billy Bob Thornton"
-                },
-                "sinopse": {
-                    "#text": "Após uma chuva de pequenos meteoros que atingem a Terra (incluindo Nova York), a NASA se dá conta de que um asteróide do tamanho do Texas está em um curso de colisão com o nosso planeta. O asteróide se aproxima da Terra à uma velocidade 35.000km/h. e, se o choque acontecer, qualquer forma de vida deixará de existir na Terra, exatamente como o que exterminou os dinossauros 65 milhões de anos atrás. Restando apenas 18 dias para o choque entre a Terra e o asteróide, a única solução possível é enviar astronautas em um ônibus espacial até a superfície do asteróide e lá perfurar 800 pés para colocar um bomba nuclear, detonando-a por controle remoto. Para cumprir tal missão é convocado o mais famoso perfurador de petróleo (Bruce Willis) a grandes profundidades do mundo, que exige formar sua equipe com técnicos que têm um comportamento nada convencional para os padrões do governo. "
-                }
-            },
-            {
-                "@id": "patriota",
-                "tituloEN": {
-                    "#text": "The Patriot"
-                },
-                "tituloBR": {
-                    "#text": "O Patriota"
-                },
-                "genero": {
-                    "#text": "Drama"
-                },
-                "duracao": {
-                    "#text": "164"
-                },
-                "ano": {
-                    "#text": "2000"
-                },
-                "site": {
-                    "#text": "http://www.thepatriot.com"
-                },
-                "distribuicao": {
-                    "#text": "Columbia TriStar / Sony Pictures Entertainment"
-                },
-                "direcao": {
-                    "#text": "Rolland Emmerich"
-                },
-                "elenco": [
-                    {
-                        "#text": "Mel Gibson"
-                    },
-                    {
-                        "#text": "Heath Ledger"
-                    },
-                    {
-                        "#text": "Joely Richardson"
-                    },
-                    {
-                        "#text": "Jason Isaacs"
-                    }
-                ],
-                "sinopse": {
-                    "#text": "Benjamin Martin (Mel Gibson) é um herói do violento conflito entre França e Índia. Desde o término da guerra, ele renunciou a luta e resolveu viver em paz com sua família. Mas quando os ingleses levam a guerra da independência americana para dentro de sua casa, Benjamin não vê outra saída a não ser pegar nas armas novamente, desta vez acompanhado por seu filho idealista (Heath Ledger), e liderar uma brava rebelião em uma batalha contra o implacável e equipado exército britânico. Neste processo, ele descobre que o único meio de proteger sua família é lutando pela liberdade da jovem nação."
-                }
-            },
-            {
-                "@id": "apollo13",
-                "tituloEN": {
-                    "#text": "Apollo 13"
-                },
-                "tituloBR": {
-                    "#text": "Apollo 13"
-                },
-                "genero": {
-                    "#text": "Drama "
-                },
-                "duracao": {
-                    "#text": "138"
-                },
-                "ano": {
-                    "#text": "1995"
-                },
-                "site": {},
-                "distribuicao": {
-                    "#text": "Universal Pictures / Imagine Entertainment"
-                },
-                "direcao": {
-                    "#text": "Ron Howard"
-                },
-                "elenco": [
-                    {
-                        "#text": "Tom Hanks"
-                    },
-                    {
-                        "#text": "Bill Paxton"
-                    },
-                    {
-                        "#text": "Kevin Bacon"
-                    },
-                    {
-                        "#text": "Ed Harris"
-                    }
-                ],
-                "sinopse": {
-                    "#text": "Três astronautas americanos a caminho de uma missão na Lua sobrevivem à uma explosão, mas precisam retornar rapidamente à Terra para poderem sobreviver, pois correm o risco de ficarem sem oxigênio. Além disto existe o risco de, mesmo retornando, a nave ficar seriamente danificada, por não suportar o imenso calor na reentrada da órbita terrestre."
-                }
-            },
-            {
-                "@id": "sextosentido",
-                "tituloEN": {
-                    "#text": "The Sixth Sense"
-                },
-                "tituloBR": {
-                    "#text": "O Sexto Sentido"
-                },
-                "genero": {
-                    "#text": "Suspense"
-                },
-                "duracao": {
-                    "#text": "106"
-                },
-                "ano": {
-                    "#text": "1999"
-                },
-                "site": {
-                    "#text": "http://www.studio.go.com/movies/sixthsense"
-                },
-                "distribuicao": {
-                    "#text": "Buena Vista International"
-                },
-                "direcao": {
-                    "#text": "M. Night Shyamalan"
-                },
-                "elenco": [
-                    {
-                        "#text": "Haley Joel Osment"
-                    },
-                    {
-                        "#text": "Bruce Willis"
-                    }
-                ],
-                "elencoApoio": [
-                    {
-                        "#text": "Toni Collette"
-                    },
-                    {
-                        "#text": "Olivia Williams"
-                    }
-                ],
-                "sinopse": {
-                    "#text": "O psicólogo infantil Malcolm Crowe (Bruce Willis) abraça com dedicação o caso de Cole Sear (Haley Joel Osment). O garoto, de 8 anos, tem dificuldades de entrosamento no colégio e vive paralisado de medo. Malcolm, por sua vez, busca se recuperar de um trauma sofrido anos antes, quando um de seus pacientes se suicidou na sua frente."
-                }
-            }
-        ]
-    }
+        "sinopse": {
+          "#text": "Luke Skywalker (Mark Hammil) sonha ir para a Academia como seus amigos, mas se vê envolvido em uma guerra intergalática quando seu tio compra dois robôs e com eles encontra uma mensagem da princesa Leia Organa (Carrie Fisher) para o jedi Obi-Wan Kenobi (Alec Guiness) sobre os planos da construção da Estrela da Morte, uma gigantesca estação espacial com capacidade para destruir um planeta. Luke então se junta aos cavaleiros jedi e a Hans Solo (Harrison Ford), um mercenário, e junto com membros da resistência tentam destruir esta terrível ameaça."
+        }
+      },
+      {
+        "@id": "armageddon",
+        "tituloEN": {
+          "#text": "Armageddon"
+        },
+        "tituloBR": {
+          "#text": "Armageddon"
+        },
+        "genero": {
+          "#text": "Ficção Científica"
+        },
+        "duracao": {
+          "#text": "151"
+        },
+        "ano": {
+          "#text": "1998"
+        },
+        "site": {
+          "#text": "http://movies.go.com/armageddon"
+        },
+        "distribuicao": {
+          "#text": "Buena Vista Pictures / Touchstone Pictures"
+        },
+        "direcao": {
+          "#text": "Michael Bay"
+        },
+        "elenco": [
+          {
+            "#text": "Bruce Willis"
+          },
+          {
+            "#text": "Ben Affleck"
+          },
+          {
+            "#text": "Liv Tyler"
+          }
+        ],
+        "elencoApoio": {
+          "#text": "Billy Bob Thornton"
+        },
+        "sinopse": {
+          "#text": "Após uma chuva de pequenos meteoros que atingem a Terra (incluindo Nova York), a NASA se dá conta de que um asteróide do tamanho do Texas está em um curso de colisão com o nosso planeta. O asteróide se aproxima da Terra à uma velocidade 35.000km/h. e, se o choque acontecer, qualquer forma de vida deixará de existir na Terra, exatamente como o que exterminou os dinossauros 65 milhões de anos atrás. Restando apenas 18 dias para o choque entre a Terra e o asteróide, a única solução possível é enviar astronautas em um ônibus espacial até a superfície do asteróide e lá perfurar 800 pés para colocar um bomba nuclear, detonando-a por controle remoto. Para cumprir tal missão é convocado o mais famoso perfurador de petróleo (Bruce Willis) a grandes profundidades do mundo, que exige formar sua equipe com técnicos que têm um comportamento nada convencional para os padrões do governo. "
+        }
+      },
+      {
+        "@id": "patriota",
+        "tituloEN": {
+          "#text": "The Patriot"
+        },
+        "tituloBR": {
+          "#text": "O Patriota"
+        },
+        "genero": {
+          "#text": "Drama"
+        },
+        "duracao": {
+          "#text": "164"
+        },
+        "ano": {
+          "#text": "2000"
+        },
+        "site": {
+          "#text": "http://www.thepatriot.com"
+        },
+        "distribuicao": {
+          "#text": "Columbia TriStar / Sony Pictures Entertainment"
+        },
+        "direcao": {
+          "#text": "Rolland Emmerich"
+        },
+        "elenco": [
+          {
+            "#text": "Mel Gibson"
+          },
+          {
+            "#text": "Heath Ledger"
+          },
+          {
+            "#text": "Joely Richardson"
+          },
+          {
+            "#text": "Jason Isaacs"
+          }
+        ],
+        "sinopse": {
+          "#text": "Benjamin Martin (Mel Gibson) é um herói do violento conflito entre França e Índia. Desde o término da guerra, ele renunciou a luta e resolveu viver em paz com sua família. Mas quando os ingleses levam a guerra da independência americana para dentro de sua casa, Benjamin não vê outra saída a não ser pegar nas armas novamente, desta vez acompanhado por seu filho idealista (Heath Ledger), e liderar uma brava rebelião em uma batalha contra o implacável e equipado exército britânico. Neste processo, ele descobre que o único meio de proteger sua família é lutando pela liberdade da jovem nação."
+        }
+      },
+      {
+        "@id": "apollo13",
+        "tituloEN": {
+          "#text": "Apollo 13"
+        },
+        "tituloBR": {
+          "#text": "Apollo 13"
+        },
+        "genero": {
+          "#text": "Drama "
+        },
+        "duracao": {
+          "#text": "138"
+        },
+        "ano": {
+          "#text": "1995"
+        },
+        "site": {},
+        "distribuicao": {
+          "#text": "Universal Pictures / Imagine Entertainment"
+        },
+        "direcao": {
+          "#text": "Ron Howard"
+        },
+        "elenco": [
+          {
+            "#text": "Tom Hanks"
+          },
+          {
+            "#text": "Bill Paxton"
+          },
+          {
+            "#text": "Kevin Bacon"
+          },
+          {
+            "#text": "Ed Harris"
+          }
+        ],
+        "sinopse": {
+          "#text": "Três astronautas americanos a caminho de uma missão na Lua sobrevivem à uma explosão, mas precisam retornar rapidamente à Terra para poderem sobreviver, pois correm o risco de ficarem sem oxigênio. Além disto existe o risco de, mesmo retornando, a nave ficar seriamente danificada, por não suportar o imenso calor na reentrada da órbita terrestre."
+        }
+      },
+      {
+        "@id": "sextosentido",
+        "tituloEN": {
+          "#text": "The Sixth Sense"
+        },
+        "tituloBR": {
+          "#text": "O Sexto Sentido"
+        },
+        "genero": {
+          "#text": "Suspense"
+        },
+        "duracao": {
+          "#text": "106"
+        },
+        "ano": {
+          "#text": "1999"
+        },
+        "site": {
+          "#text": "http://www.studio.go.com/movies/sixthsense"
+        },
+        "distribuicao": {
+          "#text": "Buena Vista International"
+        },
+        "direcao": {
+          "#text": "M. Night Shyamalan"
+        },
+        "elenco": [
+          {
+            "#text": "Haley Joel Osment"
+          },
+          {
+            "#text": "Bruce Willis"
+          }
+        ],
+        "elencoApoio": [
+          {
+            "#text": "Toni Collette"
+          },
+          {
+            "#text": "Olivia Williams"
+          }
+        ],
+        "sinopse": {
+          "#text": "O psicólogo infantil Malcolm Crowe (Bruce Willis) abraça com dedicação o caso de Cole Sear (Haley Joel Osment). O garoto, de 8 anos, tem dificuldades de entrosamento no colégio e vive paralisado de medo. Malcolm, por sua vez, busca se recuperar de um trauma sofrido anos antes, quando um de seus pacientes se suicidou na sua frente."
+        }
+      }
+    ]
+  }
 }

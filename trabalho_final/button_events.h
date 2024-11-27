@@ -40,7 +40,6 @@ static void load_text_file(GtkWidget *widget, gpointer data, char **output)
         file_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
         g_print("Arquivo selecionado: %s\n", file_path);
 
-        // Read the entire file into memory
         if (!g_file_get_contents(file_path, output, &file_size, &error))
         {
             g_print("Erro ao carregar o arquivo de texto: %s\n", error->message);
@@ -50,7 +49,6 @@ static void load_text_file(GtkWidget *widget, gpointer data, char **output)
         {
             g_print("Arquivo carregado com sucesso! Tamanho: %zu bytes\n", file_size);
 
-            // Display file content in the text view
             buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
             gtk_text_buffer_set_text(buffer, *output, file_size);
         }
@@ -80,11 +78,29 @@ static void on_convert_button_clicked(GtkWidget *widget, gpointer data)
     GtkTextBuffer *buffer;
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
     gtk_text_buffer_set_text(buffer, json_str, strlen(json_str));
+    *nfe_content = *json_str;
 }
 
 static void on_validate_button_clicked(GtkButton *button, gpointer user_data)
 {
     int result = validate_json(nfe_content, schema_content);
+    GtkWidget *parent = gtk_widget_get_toplevel(GTK_WIDGET(button));
+
+    GtkMessageType message_type = result ? GTK_MESSAGE_INFO : GTK_MESSAGE_ERROR;
+    const char *message_text = result ? "Validation succeeded!" : "Validation failed!";
+
+    GtkWidget *dialog = gtk_message_dialog_new(
+        GTK_WINDOW(parent),
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+        message_type, GTK_BUTTONS_OK,
+        "%s",
+        message_text);
+
+    gtk_window_set_title(GTK_WINDOW(dialog), result ? "Success" : "Error");
+
+    gtk_dialog_run(GTK_DIALOG(dialog));
+
+    gtk_widget_destroy(dialog);
 }
 
 #endif // BUTTON_EVENTS_H

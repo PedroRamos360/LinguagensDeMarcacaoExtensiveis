@@ -80,33 +80,50 @@ int validate_json_recursive(json_t *instance, json_t *schema, const char *conten
     {
         if (strcmp(key, "type") == 0)
         {
-            const char *expected_type = json_string_value(value);
-
-            if (!expected_type)
+            if (json_is_string(value))
             {
-                print_error_with_line("Invalid schema type definition.", 0, content);
-                return 0;
+                const char *expected_type = json_string_value(value);
+                if ((strcmp(expected_type, "object") == 0 && !json_is_object(instance)) ||
+                    (strcmp(expected_type, "array") == 0 && !json_is_array(instance)) ||
+                    (strcmp(expected_type, "string") == 0 && !json_is_string(instance)) ||
+                    (strcmp(expected_type, "integer") == 0 && !json_is_integer(instance)) ||
+                    (strcmp(expected_type, "number") == 0 && !json_is_number(instance)))
+                {
+                    char error_message[256];
+                    snprintf(error_message, sizeof(error_message),
+                             "Type mismatch: Expected %s.", expected_type);
+                    print_error_with_line(error_message, 0, content);
+                    return 0;
+                }
             }
-
-            // Type checking logic
-            if ((strcmp(expected_type, "object") == 0 && !json_is_object(instance)) ||
-                (strcmp(expected_type, "array") == 0 && !json_is_array(instance)) ||
-                (strcmp(expected_type, "string") == 0 && !json_is_string(instance)) ||
-                (strcmp(expected_type, "integer") == 0 && !json_is_integer(instance)) ||
-                (strcmp(expected_type, "number") == 0 && !json_is_number(instance)))
+            else if (json_is_array(value))
             {
-                char error_message[256];
-                snprintf(error_message, sizeof(error_message),
-                         "Type mismatch: Expected %s, but got %s.",
-                         expected_type,
-                         json_typeof(instance) == JSON_OBJECT ? "object" : json_typeof(instance) == JSON_ARRAY                                     ? "array"
-                                                                       : json_typeof(instance) == JSON_STRING                                      ? "string"
-                                                                       : json_typeof(instance) == JSON_INTEGER                                     ? "integer"
-                                                                       : json_typeof(instance) == JSON_REAL                                        ? "number"
-                                                                       : json_typeof(instance) == JSON_TRUE || json_typeof(instance) == JSON_FALSE ? "boolean"
-                                                                                                                                                   : "unknown");
-                print_error_with_line(error_message, 0, content);
-                return 0;
+                size_t index;
+                json_t *allowed_type;
+                int valid = 0;
+
+                json_array_foreach(value, index, allowed_type)
+                {
+                    const char *type_str = json_string_value(allowed_type);
+                    if ((strcmp(type_str, "object") == 0 && json_is_object(instance)) ||
+                        (strcmp(type_str, "array") == 0 && json_is_array(instance)) ||
+                        (strcmp(type_str, "string") == 0 && json_is_string(instance)) ||
+                        (strcmp(type_str, "integer") == 0 && json_is_integer(instance)) ||
+                        (strcmp(type_str, "number") == 0 && json_is_number(instance)))
+                    {
+                        valid = 1;
+                        break;
+                    }
+                }
+
+                if (!valid)
+                {
+                    char error_message[256];
+                    snprintf(error_message, sizeof(error_message),
+                             "Type mismatch: Expected one of the union types.");
+                    print_error_with_line(error_message, 0, content);
+                    return 0;
+                }
             }
         }
         else if (strcmp(key, "properties") == 0)
@@ -175,6 +192,58 @@ int validate_json_recursive(json_t *instance, json_t *schema, const char *conten
                              "Validation failed for array item at index %zu.", index);
                     print_error_with_line(error_message, 0, content);
                     return 0;
+                }
+            }
+        }
+        else if (strcmp(key, "additionalProperties") == 0)
+        {
+            if (json_is_boolean(value))
+            {
+                // If additionalProperties is false, ensure no extra properties exist
+                if (!json_boolean_value(value))
+                {
+                    const char *instance_key;
+                    json_t *instance_value;
+
+                    json_object_foreach(instance, instance_key, instance_value)
+                    {
+                        // Check if the property is defined in "properties"
+                        if (!json_object_get(schema, "properties") ||
+                            !json_object_get(json_object_get(schema, "properties"), instance_key))
+                        {
+                            char error_message[256];
+                            snprintf(error_message, sizeof(error_message),
+                                     "Additional property '%s' is not allowed.", instance_key);
+                            print_error_with_line(error_message, 0, content);
+                            return 0;
+                        }
+                    }
+                }
+            }
+            else if (json_is_object(value))
+            {
+                // If additionalProperties is a schema, validate each extra property
+                const char *instance_key;
+                json_t *instance_value;
+
+                json_object_foreach(instance, instance_key, instance_value)
+                {
+                    // Skip properties defined in "properties"
+                    if (json_object_get(schema, "properties") &&
+                        json_object_get(json_object_get(schema, "properties"), instance_key))
+                    {
+                        continue;
+                    }
+
+                    // Validate additional property against the additionalProperties schema
+                    if (!validate_json_recursive(instance_value, value, content))
+                    {
+                        char error_message[256];
+                        snprintf(error_message, sizeof(error_message),
+                                 "Validation failed for additional property '%s'.", instance_key);
+                        print_error_with_line(error_message, 0, content);
+                        return 0;
+                    }
                 }
             }
         }

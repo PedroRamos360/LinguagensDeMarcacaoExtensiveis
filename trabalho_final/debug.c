@@ -73,28 +73,13 @@ GtkWidget *create_dashboard_view(GtkStack *stack)
 {
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
+    GtkWidget *label = gtk_label_new("Dashboard View");
     GtkWidget *back_button = gtk_button_new_with_label("Back to Main");
+
+    gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), back_button, FALSE, FALSE, 0);
+
     g_signal_connect(back_button, "clicked", G_CALLBACK(on_back_button_clicked), stack);
-
-    GtkWidget *notebook = gtk_notebook_new();
-
-    GtkWidget *general_view = gtk_label_new("General View Content");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), general_view, gtk_label_new("General"));
-
-    GtkWidget *nf_view = gtk_label_new("NF View Content");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), nf_view, gtk_label_new("NFs"));
-
-    GtkWidget *taxes_view = gtk_label_new("Taxes View Content");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), taxes_view, gtk_label_new("Taxes"));
-
-    GtkWidget *suppliers_view = gtk_label_new("Suppliers View Content");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), suppliers_view, gtk_label_new("Suppliers"));
-
-    GtkWidget *transporters_view = gtk_label_new("Transporters View Content");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), transporters_view, gtk_label_new("Transporters"));
-
-    gtk_box_pack_start(GTK_BOX(vbox), notebook, TRUE, TRUE, 0);
 
     return vbox;
 }

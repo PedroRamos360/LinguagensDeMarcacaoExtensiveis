@@ -13,5 +13,8 @@ test: tests/validate_json.c
 dashboard: dashboard.c
 	$(CC) dashboard.c -o dashboard $(CFLAGS) $(LIBS)
 
+debug: debug.c 
+	$(CC)  debug.c -o debug $(CFLAGS) $(LIBS) -g
+
 clean:
 	rm -f $(TARGET).exe test.exe  dashboard.exe

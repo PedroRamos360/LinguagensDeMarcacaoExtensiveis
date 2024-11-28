@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=`pkg-config --cflags gtk+-3.0 libxml-2.0 jansson json-c`
 LIBS=`pkg-config --libs gtk+-3.0 libxml-2.0 jansson json-c`
 TARGET=main
-SRC=main.c
+SRC=main.c dashboard.c
 
 $(TARGET): $(SRC)
 	$(CC) $(SRC) -o $(TARGET) $(CFLAGS) $(LIBS)
@@ -17,4 +17,4 @@ debug: debug.c
 	$(CC)  debug.c -o debug $(CFLAGS) $(LIBS) -g
 
 clean:
-	rm -f $(TARGET).exe test.exe  dashboard.exe
+	rm -f $(TARGET).exe test.exe  dashboard.exe debug.exe

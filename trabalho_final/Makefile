@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=`pkg-config --cflags gtk+-3.0 libxml-2.0 jansson json-c`
 LIBS=`pkg-config --libs gtk+-3.0 libxml-2.0 jansson json-c`
 TARGET=main
-SRC=main.c dashboard.c
+SRC=main.c dashboard.c xml_to_json.c validate_json.c
 
 $(TARGET): $(SRC)
 	$(CC) $(SRC) -o $(TARGET) $(CFLAGS) $(LIBS)

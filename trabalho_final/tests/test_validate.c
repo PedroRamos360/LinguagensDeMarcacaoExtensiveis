@@ -32,8 +32,6 @@ int main()
     int result = validate_json(main_instance, main_schema);
     if (!result)
     {
-        printf("Schema: %s\n", main_schema);
-        printf("Instance: %s\n", main_instance);
     }
 
     print_failure("\n========== SHOULD FAIL TESTS ==========\n");
@@ -56,8 +54,6 @@ int main()
         int result = validate_json(instance, schema);
         if (result)
         {
-            printf("Schema: %s\n", schema);
-            printf("Instance: %s\n", instance);
         }
     }
 

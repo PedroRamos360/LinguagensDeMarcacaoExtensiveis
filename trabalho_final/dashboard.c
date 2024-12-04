@@ -253,10 +253,98 @@ void add_nf_view(GtkNotebook *notebook)
     gtk_widget_show_all(nf_view);
 }
 
+typedef struct
+{
+    double icms;
+    double pis;
+    double cofins;
+    double ipi;
+} NFeTaxes;
+
 void add_taxes_view(GtkNotebook *notebook)
 {
-    GtkWidget *taxes_view = gtk_label_new("Taxes View Content");
-    gtk_notebook_append_page(notebook, taxes_view, gtk_label_new("Taxes"));
+    GtkWidget *general_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_notebook_append_page(notebook, general_view, gtk_label_new("General"));
+
+    char *nfe_files[] = {
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
+
+    double total_taxes = 0.0;
+    NFeTaxes nfes[6] = {0};
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (!nfe_files[i])
+        {
+            fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
+            continue;
+        }
+
+        json_error_t error;
+        json_t *root = json_loads(nfe_files[i], 0, &error);
+        if (!root)
+        {
+            fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
+            free(nfe_files[i]);
+            continue;
+        }
+
+        json_t *nfeProc = json_object_get(root, "nfeProc");
+        json_t *NFe = json_object_get(nfeProc, "NFe");
+        json_t *infNFe = json_object_get(NFe, "infNFe");
+        json_t *total = json_object_get(infNFe, "total");
+        json_t *ICMSTot = json_object_get(total, "ICMSTot");
+
+        json_t *vTotTrib = json_object_get(ICMSTot, "vTotTrib");
+        json_t *vtot_text = json_object_get(vTotTrib, "#text");
+        total_taxes += atof(json_string_value(vtot_text));
+
+        json_t *vICMS = json_object_get(ICMSTot, "vICMS");
+        json_t *vicms_text = json_object_get(vICMS, "#text");
+        nfes[i].icms = atof(json_string_value(vicms_text));
+        json_t *vPIS = json_object_get(ICMSTot, "vPIS");
+        json_t *vpis_text = json_object_get(vPIS, "#text");
+        nfes[i].pis = atof(json_string_value(vpis_text));
+        json_t *vCOFINS = json_object_get(ICMSTot, "vCOFINS");
+        json_t *vcofins_text = json_object_get(vCOFINS, "#text");
+        nfes[i].cofins = atof(json_string_value(vcofins_text));
+        json_t *vIPI = json_object_get(ICMSTot, "vIPI");
+        json_t *vipi_text = json_object_get(vIPI, "#text");
+        nfes[i].ipi = atof(json_string_value(vipi_text));
+
+        json_decref(root);
+        free(nfe_files[i]);
+    }
+
+    GtkWidget *label_taxes = gtk_label_new(NULL);
+    gtk_label_set_markup(GTK_LABEL(label_taxes), g_strdup_printf("<span font='30'>Total Taxes: %.2f</span>", total_taxes));
+    gtk_box_pack_start(GTK_BOX(general_view), label_taxes, FALSE, FALSE, 0);
+
+    for (int i = 0; i < 6; i++)
+    {
+        GtkWidget *label_icms = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_icms), g_strdup_printf("<span font='20'>NFE%d ICMS: %.2f</span>", i + 1, nfes[i].icms));
+        gtk_box_pack_start(GTK_BOX(general_view), label_icms, FALSE, FALSE, 0);
+
+        GtkWidget *label_pis = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_pis), g_strdup_printf("<span font='20'>NFE%d PIS: %.2f</span>", i + 1, nfes[i].pis));
+        gtk_box_pack_start(GTK_BOX(general_view), label_pis, FALSE, FALSE, 0);
+
+        GtkWidget *label_cofins = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_cofins), g_strdup_printf("<span font='20'>NFE%d COFINS: %.2f</span>", i + 1, nfes[i].cofins));
+        gtk_box_pack_start(GTK_BOX(general_view), label_cofins, FALSE, FALSE, 0);
+
+        GtkWidget *label_ipi = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_ipi), g_strdup_printf("<span font='20'>NFE%d IPI: %.2f</span>", i + 1, nfes[i].ipi));
+        gtk_box_pack_start(GTK_BOX(general_view), label_ipi, FALSE, FALSE, 0);
+    }
+
+    gtk_widget_show_all(general_view);
 }
 
 void add_suppliers_view(GtkNotebook *notebook)

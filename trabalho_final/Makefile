@@ -7,8 +7,8 @@ SRC=main.c dashboard.c xml_to_json.c validate_json.c
 $(TARGET): $(SRC)
 	$(CC) $(SRC) -o $(TARGET) $(CFLAGS) $(LIBS)
 
-test: tests/validate_json.c
-	$(CC) tests/validate_json.c -o test $(CFLAGS) $(LIBS)
+test: tests/test_validate.c
+	$(CC) tests/test_validate.c validate_json.c -o test $(CFLAGS) $(LIBS)
 
 dashboard: dashboard.c
 	$(CC) dashboard.c -o dashboard $(CFLAGS) $(LIBS)

@@ -10,11 +10,9 @@
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
-void print_error_with_line(const char *message, int offset, const char *content);
 void print_success(const char *message);
 void print_failure(const char *message);
 char *read_file(const char *filename);
-int validate_json_recursive(json_t *instance, json_t *schema, const char *content);
 int validate_json(const char *instance_str, const char *schema_str);
 
 #endif // JSON_VALIDATOR_H

@@ -1,6 +1,7 @@
 #include "dashboard.h"
 #include "xml_to_json.h"
 #include "validate_json.h"
+#include <locale.h>
 
 static void on_back_button_clicked(GtkButton *button, gpointer user_data)
 {
@@ -10,6 +11,7 @@ static void on_back_button_clicked(GtkButton *button, gpointer user_data)
 
 void add_general_view(GtkNotebook *notebook)
 {
+    setlocale(LC_NUMERIC, "en_US.UTF-8");
     GtkWidget *general_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_notebook_append_page(notebook, general_view, gtk_label_new("General"));
 
@@ -67,6 +69,8 @@ void add_general_view(GtkNotebook *notebook)
             json_t *ICMSTot = json_object_get(total, "ICMSTot");
             json_t *vTotTrib = json_object_get(ICMSTot, "vTotTrib");
             json_t *vicms_text = json_object_get(vTotTrib, "#text");
+            printf("vicms_text: %s\n", json_string_value(vicms_text));
+            printf("vicms atof: %.2f\n", atof(json_string_value(vicms_text)));
             total_taxes += atof(json_string_value(vicms_text));
         }
 
@@ -259,12 +263,17 @@ typedef struct
     double pis;
     double cofins;
     double ipi;
+    double outros
 } NFeTaxes;
 
 void add_taxes_view(GtkNotebook *notebook)
 {
+    setlocale(LC_NUMERIC, "en_US.UTF-8");
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     GtkWidget *general_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_notebook_append_page(notebook, general_view, gtk_label_new("General"));
+    gtk_container_add(GTK_CONTAINER(scrollable_view), general_view);
+    gtk_notebook_append_page(notebook, scrollable_view, gtk_label_new("Taxes"));
 
     char *nfe_files[] = {
         xml_to_json(read_file("notas/NFE1.xml")),
@@ -317,6 +326,8 @@ void add_taxes_view(GtkNotebook *notebook)
         json_t *vipi_text = json_object_get(vIPI, "#text");
         nfes[i].ipi = atof(json_string_value(vipi_text));
 
+        nfes[i].outros = total_taxes - nfes[i].icms - nfes[i].pis - nfes[i].cofins - nfes[i].ipi;
+
         json_decref(root);
         free(nfe_files[i]);
     }
@@ -327,21 +338,29 @@ void add_taxes_view(GtkNotebook *notebook)
 
     for (int i = 0; i < 6; i++)
     {
+        GtkWidget *label_nfe = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_nfe), g_strdup_printf("<span font='25'><b>NFE%d</b></span>", i + 1));
+        gtk_box_pack_start(GTK_BOX(general_view), label_nfe, FALSE, FALSE, 0);
+
         GtkWidget *label_icms = gtk_label_new(NULL);
-        gtk_label_set_markup(GTK_LABEL(label_icms), g_strdup_printf("<span font='20'>NFE%d ICMS: %.2f</span>", i + 1, nfes[i].icms));
+        gtk_label_set_markup(GTK_LABEL(label_icms), g_strdup_printf("<span font='20'>ICMS: %.2f</span>", nfes[i].icms));
         gtk_box_pack_start(GTK_BOX(general_view), label_icms, FALSE, FALSE, 0);
 
         GtkWidget *label_pis = gtk_label_new(NULL);
-        gtk_label_set_markup(GTK_LABEL(label_pis), g_strdup_printf("<span font='20'>NFE%d PIS: %.2f</span>", i + 1, nfes[i].pis));
+        gtk_label_set_markup(GTK_LABEL(label_pis), g_strdup_printf("<span font='20'>PIS: %.2f</span>", nfes[i].pis));
         gtk_box_pack_start(GTK_BOX(general_view), label_pis, FALSE, FALSE, 0);
 
         GtkWidget *label_cofins = gtk_label_new(NULL);
-        gtk_label_set_markup(GTK_LABEL(label_cofins), g_strdup_printf("<span font='20'>NFE%d COFINS: %.2f</span>", i + 1, nfes[i].cofins));
+        gtk_label_set_markup(GTK_LABEL(label_cofins), g_strdup_printf("<span font='20'>COFINS: %.2f</span>", nfes[i].cofins));
         gtk_box_pack_start(GTK_BOX(general_view), label_cofins, FALSE, FALSE, 0);
 
         GtkWidget *label_ipi = gtk_label_new(NULL);
-        gtk_label_set_markup(GTK_LABEL(label_ipi), g_strdup_printf("<span font='20'>NFE%d IPI: %.2f</span>", i + 1, nfes[i].ipi));
+        gtk_label_set_markup(GTK_LABEL(label_ipi), g_strdup_printf("<span font='20'>IPI: %.2f</span>", nfes[i].ipi));
         gtk_box_pack_start(GTK_BOX(general_view), label_ipi, FALSE, FALSE, 0);
+
+        GtkWidget *label_outros = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_outros), g_strdup_printf("<span font='20'>Outros: %.2f</span>", nfes[i].outros));
+        gtk_box_pack_start(GTK_BOX(general_view), label_outros, FALSE, FALSE, 0);
     }
 
     gtk_widget_show_all(general_view);

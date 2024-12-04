@@ -263,7 +263,7 @@ typedef struct
     double pis;
     double cofins;
     double ipi;
-    double outros
+    double outros;
 } NFeTaxes;
 
 void add_taxes_view(GtkNotebook *notebook)
@@ -311,7 +311,8 @@ void add_taxes_view(GtkNotebook *notebook)
 
         json_t *vTotTrib = json_object_get(ICMSTot, "vTotTrib");
         json_t *vtot_text = json_object_get(vTotTrib, "#text");
-        total_taxes += atof(json_string_value(vtot_text));
+        double this_taxes = atof(json_string_value(vtot_text));
+        total_taxes += this_taxes;
 
         json_t *vICMS = json_object_get(ICMSTot, "vICMS");
         json_t *vicms_text = json_object_get(vICMS, "#text");
@@ -326,7 +327,7 @@ void add_taxes_view(GtkNotebook *notebook)
         json_t *vipi_text = json_object_get(vIPI, "#text");
         nfes[i].ipi = atof(json_string_value(vipi_text));
 
-        nfes[i].outros = total_taxes - nfes[i].icms - nfes[i].pis - nfes[i].cofins - nfes[i].ipi;
+        nfes[i].outros = this_taxes - nfes[i].icms - nfes[i].pis - nfes[i].cofins - nfes[i].ipi;
 
         json_decref(root);
         free(nfe_files[i]);

@@ -135,7 +135,14 @@
             </total>
             <transp>
                 <modFrete>0</modFrete>
-                <transporta/>
+                <transporta>
+                    <CNPJ>12345678000195</CNPJ>
+                    <xNome>Transportadora ABC</xNome>
+                    <IE>123456789</IE>
+                    <xEnder>Rua das Transportadoras, 123</xEnder>
+                    <xMun>São Paulo</xMun>
+                    <UF>SP</UF>
+                </transporta>
             </transp>
             <pag>
                 <detPag>

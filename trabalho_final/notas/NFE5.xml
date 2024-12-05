@@ -129,7 +129,15 @@
                 </ICMSTot>
             </total>
             <transp>
-                <modFrete>2</modFrete>
+                <modFrete>0</modFrete>
+                <transporta>
+                    <CNPJ>22334455000177</CNPJ>
+                    <xNome>Transportadora JKL</xNome>
+                    <IE>223344556</IE>
+                    <xEnder>Rua das Transportadoras, 202</xEnder>
+                    <xMun>Porto Alegre</xMun>
+                    <UF>RS</UF>
+                </transporta>
             </transp>
             <pag>
                 <detPag>

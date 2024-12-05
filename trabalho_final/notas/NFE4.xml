@@ -177,7 +177,14 @@
             </total>
             <transp>
                 <modFrete>0</modFrete>
-                <transporta/>
+                <transporta>
+                    <CNPJ>55667788000199</CNPJ>
+                    <xNome>Transportadora GHI</xNome>
+                    <IE>556677889</IE>
+                    <xEnder>Avenida das Transportadoras, 101</xEnder>
+                    <xMun>Curitiba</xMun>
+                    <UF>PR</UF>
+                </transporta>
             </transp>
             <pag>
                 <detPag>

@@ -130,7 +130,15 @@
                 </ICMSTot>
             </total>
             <transp>
-                <modFrete>2</modFrete>
+                <modFrete>0</modFrete>
+                <transporta>
+                    <CNPJ>11223344000188</CNPJ>
+                    <xNome>Transportadora DEF</xNome>
+                    <IE>112233445</IE>
+                    <xEnder>Rua das Transportadoras, 789</xEnder>
+                    <xMun>Belo Horizonte</xMun>
+                    <UF>MG</UF>
+                </transporta>
             </transp>
             <pag>
                 <detPag>

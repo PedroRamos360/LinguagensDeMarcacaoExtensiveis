@@ -203,7 +203,14 @@
             </total>
             <transp>
                 <modFrete>0</modFrete>
-                <transporta/>
+                <transporta>
+                    <CNPJ>33445566000166</CNPJ>
+                    <xNome>Transportadora MNO</xNome>
+                    <IE>334455667</IE>
+                    <xEnder>Avenida das Transportadoras, 303</xEnder>
+                    <xMun>Florianópolis</xMun>
+                    <UF>SC</UF>
+                </transporta>
             </transp>
             <pag>
                 <detPag>

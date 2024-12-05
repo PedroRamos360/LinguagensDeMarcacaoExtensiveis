@@ -369,14 +369,158 @@ void add_taxes_view(GtkNotebook *notebook)
 
 void add_suppliers_view(GtkNotebook *notebook)
 {
-    GtkWidget *suppliers_view = gtk_label_new("Suppliers View Content");
+    GtkWidget *suppliers_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_notebook_append_page(notebook, suppliers_view, gtk_label_new("Suppliers"));
+
+    char *nfe_files[] = {
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
+
+    GHashTable *suppliers = g_hash_table_new(g_str_hash, g_str_equal);
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (!nfe_files[i])
+        {
+            fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
+            continue;
+        }
+
+        json_error_t error;
+        json_t *root = json_loads(nfe_files[i], 0, &error);
+        if (!root)
+        {
+            fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
+            free(nfe_files[i]);
+            continue;
+        }
+
+        json_t *nfeProc = json_object_get(root, "nfeProc");
+        json_t *NFe = json_object_get(nfeProc, "NFe");
+        json_t *infNFe = json_object_get(NFe, "infNFe");
+        json_t *emit = json_object_get(infNFe, "emit");
+        json_t *xNome = json_object_get(emit, "xNome");
+        json_t *xnome_text = json_object_get(xNome, "#text");
+        const char *supplier_name = json_string_value(xnome_text);
+
+        GList *nfe_list = g_hash_table_lookup(suppliers, supplier_name);
+        nfe_list = g_list_append(nfe_list, nfe_files[i]);
+        g_hash_table_insert(suppliers, g_strdup(supplier_name), nfe_list);
+
+        json_decref(root);
+    }
+
+    GList *keys = g_hash_table_get_keys(suppliers);
+    keys = g_list_sort(keys, (GCompareFunc)g_strcmp0);
+
+    for (GList *iter = keys; iter != NULL; iter = iter->next)
+    {
+        const char *supplier_name = iter->data;
+        GtkWidget *label_supplier = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_supplier), g_strdup_printf("<span font='20'><b>%s</b></span>", supplier_name));
+        gtk_box_pack_start(GTK_BOX(suppliers_view), label_supplier, FALSE, FALSE, 0);
+
+        GList *nfe_list = g_hash_table_lookup(suppliers, supplier_name);
+        for (GList *nfe_iter = nfe_list; nfe_iter != NULL; nfe_iter = nfe_iter->next)
+        {
+            char *nfe_json = nfe_iter->data;
+            GtkWidget *button = gtk_button_new_with_label("Open NFE");
+            g_signal_connect(button, "clicked", G_CALLBACK(on_nfe_button_clicked), nfe_json);
+            gtk_box_pack_start(GTK_BOX(suppliers_view), button, FALSE, FALSE, 0);
+        }
+    }
+
+    g_list_free(keys);
+    g_hash_table_destroy(suppliers);
+
+    gtk_widget_show_all(suppliers_view);
 }
 
 void add_transporters_view(GtkNotebook *notebook)
 {
-    GtkWidget *transporters_view = gtk_label_new("Transporters View Content");
+    GtkWidget *transporters_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_notebook_append_page(notebook, transporters_view, gtk_label_new("Transporters"));
+
+    char *nfe_files[] = {
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
+
+    GHashTable *transporters = g_hash_table_new(g_str_hash, g_str_equal);
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (!nfe_files[i])
+        {
+            fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
+            continue;
+        }
+
+        json_error_t error;
+        json_t *root = json_loads(nfe_files[i], 0, &error);
+        if (!root)
+        {
+            fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
+            free(nfe_files[i]);
+            continue;
+        }
+
+        json_t *nfeProc = json_object_get(root, "nfeProc");
+        json_t *NFe = json_object_get(nfeProc, "NFe");
+        json_t *infNFe = json_object_get(NFe, "infNFe");
+        json_t *transp = json_object_get(infNFe, "transp");
+        json_t *transporta = json_object_get(transp, "transporta");
+        if (transporta)
+        {
+            json_t *xNome = json_object_get(transporta, "xNome");
+            if (xNome)
+            {
+                json_t *xnome_text = json_object_get(xNome, "#text");
+                if (xnome_text && json_is_string(xnome_text))
+                {
+                    const char *transporter_name = json_string_value(xnome_text);
+
+                    GList *nfe_list = g_hash_table_lookup(transporters, transporter_name);
+                    nfe_list = g_list_append(nfe_list, nfe_files[i]);
+                    g_hash_table_insert(transporters, g_strdup(transporter_name), nfe_list);
+                }
+            }
+        }
+
+        json_decref(root);
+    }
+
+    GList *keys = g_hash_table_get_keys(transporters);
+    keys = g_list_sort(keys, (GCompareFunc)g_strcmp0);
+
+    for (GList *iter = keys; iter != NULL; iter = iter->next)
+    {
+        const char *transporter_name = iter->data;
+        GtkWidget *label_transporter = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label_transporter), g_strdup_printf("<span font='20'><b>%s</b></span>", transporter_name));
+        gtk_box_pack_start(GTK_BOX(transporters_view), label_transporter, FALSE, FALSE, 0);
+
+        GList *nfe_list = g_hash_table_lookup(transporters, transporter_name);
+        for (GList *nfe_iter = nfe_list; nfe_iter != NULL; nfe_iter = nfe_iter->next)
+        {
+            char *nfe_json = nfe_iter->data;
+            GtkWidget *button = gtk_button_new_with_label("Open NFE");
+            g_signal_connect(button, "clicked", G_CALLBACK(on_nfe_button_clicked), nfe_json);
+            gtk_box_pack_start(GTK_BOX(transporters_view), button, FALSE, FALSE, 0);
+        }
+    }
+
+    g_list_free(keys);
+    g_hash_table_destroy(transporters);
+
+    gtk_widget_show_all(transporters_view);
 }
 
 GtkWidget *create_dashboard_view(GtkStack *stack)

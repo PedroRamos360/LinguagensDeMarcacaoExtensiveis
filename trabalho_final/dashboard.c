@@ -13,7 +13,7 @@ void add_general_view(GtkNotebook *notebook)
 {
     setlocale(LC_NUMERIC, "en_US.UTF-8");
     GtkWidget *general_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_notebook_append_page(notebook, general_view, gtk_label_new("General"));
+    gtk_notebook_append_page(notebook, general_view, gtk_label_new("Geral"));
 
     char *nfe_files[] = {
         xml_to_json(read_file("notas/NFE1.xml")),
@@ -79,19 +79,19 @@ void add_general_view(GtkNotebook *notebook)
     }
 
     GtkWidget *label_nfs = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_nfs), g_strdup_printf("<span font='30'>Total NFs: %d</span>", total_nfs));
+    gtk_label_set_markup(GTK_LABEL(label_nfs), g_strdup_printf("<span font='30'>Total de NFs: %d</span>", total_nfs));
     gtk_box_pack_start(GTK_BOX(general_view), label_nfs, FALSE, FALSE, 0);
 
     GtkWidget *label_products = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_products), g_strdup_printf("<span font='30'>Total Products: %d</span>", total_products));
+    gtk_label_set_markup(GTK_LABEL(label_products), g_strdup_printf("<span font='30'>Total de Produtos: %d</span>", total_products));
     gtk_box_pack_start(GTK_BOX(general_view), label_products, FALSE, FALSE, 0);
 
     GtkWidget *label_value = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_value), g_strdup_printf("<span font='30'>Total Value: %.2f</span>", total_value));
+    gtk_label_set_markup(GTK_LABEL(label_value), g_strdup_printf("<span font='30'>Valor Total: %.2f</span>", total_value));
     gtk_box_pack_start(GTK_BOX(general_view), label_value, FALSE, FALSE, 0);
 
     GtkWidget *label_taxes = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_taxes), g_strdup_printf("<span font='30'>Total Taxes: %.2f</span>", total_taxes));
+    gtk_label_set_markup(GTK_LABEL(label_taxes), g_strdup_printf("<span font='30'>Total de Impostos: %.2f</span>", total_taxes));
     gtk_box_pack_start(GTK_BOX(general_view), label_taxes, FALSE, FALSE, 0);
 
     gtk_widget_show_all(general_view);
@@ -129,7 +129,7 @@ void display_nfe_data(const char *nfe_json)
         }
     }
     GtkWidget *label_store_title = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_store_title), "<b>Store:</b>");
+    gtk_label_set_markup(GTK_LABEL(label_store_title), "<b>Loja:</b>");
     gtk_box_pack_start(GTK_BOX(vbox), label_store_title, FALSE, FALSE, 0);
 
     GtkWidget *label_store = gtk_label_new(NULL);
@@ -137,7 +137,7 @@ void display_nfe_data(const char *nfe_json)
     gtk_box_pack_start(GTK_BOX(vbox), label_store, FALSE, FALSE, 0);
 
     GtkWidget *label_products_title = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_products_title), "<b>Products:</b>");
+    gtk_label_set_markup(GTK_LABEL(label_products_title), "<b>Produtos:</b>");
     gtk_box_pack_start(GTK_BOX(vbox), label_products_title, FALSE, FALSE, 0);
 
     json_t *det = json_object_get(infNFe, "det");
@@ -211,7 +211,7 @@ void display_nfe_data(const char *nfe_json)
     }
 
     GtkWidget *label_total_title = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_total_title), "<b>Total Value:</b>");
+    gtk_label_set_markup(GTK_LABEL(label_total_title), "<b>Valor Total:</b>");
     gtk_box_pack_start(GTK_BOX(vbox), label_total_title, FALSE, FALSE, 0);
 
     GtkWidget *label_total = gtk_label_new(NULL);
@@ -250,7 +250,7 @@ void add_nf_view(GtkNotebook *notebook)
         }
 
         GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Open NFE %d", i + 1));
-        g_signal_connect(button, "clicked", G_CALLBACK(on_nfe_button_clicked), nfe_files[i]);
+        g_signal_connect(button, "clicked", G_CALLBACK(on_nfe_button_clicked), g_strdup(nfe_files[i]));
         gtk_box_pack_start(GTK_BOX(nf_view), button, FALSE, FALSE, 0);
     }
 
@@ -273,7 +273,7 @@ void add_taxes_view(GtkNotebook *notebook)
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     GtkWidget *general_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(scrollable_view), general_view);
-    gtk_notebook_append_page(notebook, scrollable_view, gtk_label_new("Taxes"));
+    gtk_notebook_append_page(notebook, scrollable_view, gtk_label_new("Impostos"));
 
     char *nfe_files[] = {
         xml_to_json(read_file("notas/NFE1.xml")),
@@ -334,7 +334,7 @@ void add_taxes_view(GtkNotebook *notebook)
     }
 
     GtkWidget *label_taxes = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_taxes), g_strdup_printf("<span font='30'>Total Taxes: %.2f</span>", total_taxes));
+    gtk_label_set_markup(GTK_LABEL(label_taxes), g_strdup_printf("<span font='30'>Total de Impostos: %.2f</span>", total_taxes));
     gtk_box_pack_start(GTK_BOX(general_view), label_taxes, FALSE, FALSE, 0);
 
     for (int i = 0; i < 6; i++)
@@ -370,7 +370,7 @@ void add_taxes_view(GtkNotebook *notebook)
 void add_suppliers_view(GtkNotebook *notebook)
 {
     GtkWidget *suppliers_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_notebook_append_page(notebook, suppliers_view, gtk_label_new("Suppliers"));
+    gtk_notebook_append_page(notebook, suppliers_view, gtk_label_new("Fornecedores"));
 
     char *nfe_files[] = {
         xml_to_json(read_file("notas/NFE1.xml")),
@@ -443,7 +443,7 @@ void add_suppliers_view(GtkNotebook *notebook)
 void add_transporters_view(GtkNotebook *notebook)
 {
     GtkWidget *transporters_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_notebook_append_page(notebook, transporters_view, gtk_label_new("Transporters"));
+    gtk_notebook_append_page(notebook, transporters_view, gtk_label_new("Transportadoras"));
 
     char *nfe_files[] = {
         xml_to_json(read_file("notas/NFE1.xml")),
@@ -511,7 +511,7 @@ void add_transporters_view(GtkNotebook *notebook)
         for (GList *nfe_iter = nfe_list; nfe_iter != NULL; nfe_iter = nfe_iter->next)
         {
             char *nfe_json = nfe_iter->data;
-            GtkWidget *button = gtk_button_new_with_label("Open NFE");
+            GtkWidget *button = gtk_button_new_with_label("Abrir NFE");
             g_signal_connect(button, "clicked", G_CALLBACK(on_nfe_button_clicked), nfe_json);
             gtk_box_pack_start(GTK_BOX(transporters_view), button, FALSE, FALSE, 0);
         }
@@ -527,7 +527,7 @@ GtkWidget *create_dashboard_view(GtkStack *stack)
 {
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
-    GtkWidget *back_button = gtk_button_new_with_label("Back to Main");
+    GtkWidget *back_button = gtk_button_new_with_label("Voltar para Main");
     gtk_box_pack_start(GTK_BOX(vbox), back_button, FALSE, FALSE, 0);
     g_signal_connect(back_button, "clicked", G_CALLBACK(on_back_button_clicked), stack);
 

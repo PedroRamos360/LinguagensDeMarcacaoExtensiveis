@@ -8,101 +8,571 @@ static void on_back_button_clicked(GtkButton *button, gpointer user_data)
     gtk_stack_set_visible_child_name(stack, "main-view");
 }
 
+void display_nf(const char *nfe_json)
+{
+    json_error_t error;
+    json_t *root = json_loads(nfe_json, 0, &error);
+    if (!root)
+    {
+        fprintf(stderr, "Error parsing JSON: %s\n", error.text);
+        return;
+    }
+
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "NFE Details");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 600);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE); // Disable resizing
+
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(window), scrollable_view);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    GtkWidget *text_view = gtk_text_view_new();
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_view), FALSE);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, nfe_json, -1);
+    gtk_box_pack_start(GTK_BOX(vbox), text_view, TRUE, TRUE, 0);
+
+    gtk_widget_show_all(window);
+    json_decref(root);
+}
+
 void on_nf_clicked(GtkButton *button, gpointer user_data)
 {
-    GtkWidget **views = (GtkWidget **)user_data;
-    const char *xml_content = (const char *)g_object_get_data(G_OBJECT(button), "xml_content");
-    const char *json_content = (const char *)g_object_get_data(G_OBJECT(button), "json_content");
-
-    GtkTextBuffer *xml_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(views[0]));
-    gtk_text_buffer_set_text(xml_buffer, xml_content, -1);
-
-    GtkTextBuffer *json_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(views[1]));
-    gtk_text_buffer_set_text(json_buffer, json_content, -1);
+    const char *nfe_json = (const char *)user_data;
+    display_nf(nfe_json);
 }
 
 void set_tab1_content(GtkWidget *tab_view)
 {
-    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    gtk_box_pack_start(GTK_BOX(tab_view), hbox, TRUE, TRUE, 0);
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(tab_view), scrollable_view, TRUE, TRUE, 0);
 
-    GtkWidget *list_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_box_pack_start(GTK_BOX(hbox), list_vbox, FALSE, FALSE, 0);
-
-    GtkWidget *xml_view = gtk_text_view_new();
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(xml_view), FALSE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(xml_view), FALSE);
-    GtkWidget *xml_scroll = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(xml_scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_container_add(GTK_CONTAINER(xml_scroll), xml_view);
-    gtk_box_pack_start(GTK_BOX(hbox), xml_scroll, TRUE, TRUE, 0);
-
-    GtkWidget *json_view = gtk_text_view_new();
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(json_view), FALSE);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(json_view), FALSE);
-    GtkWidget *json_scroll = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(json_scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_container_add(GTK_CONTAINER(json_scroll), json_view);
-    gtk_box_pack_start(GTK_BOX(hbox), json_scroll, TRUE, TRUE, 0);
-
-    GtkWidget *views[2];
-    views[0] = xml_view;
-    views[1] = json_view;
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
 
     char *nfe_files[] = {
-        read_file("notas/NFE1.xml"),
-        read_file("notas/NFE2.xml"),
-        read_file("notas/NFE3.xml"),
-        read_file("notas/NFE4.xml"),
-        read_file("notas/NFE5.xml"),
-        read_file("notas/NFE6.xml")};
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
 
     for (int i = 0; i < 6; i++)
     {
         if (!nfe_files[i])
         {
-            fprintf(stderr, "Error reading XML for NFE%d\n", i + 1);
-            continue;
-        }
-
-        char *json_content = xml_to_json(nfe_files[i]);
-        if (!json_content)
-        {
             fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
-            free(nfe_files[i]);
             continue;
         }
 
-        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("NFE%d", i + 1));
-        g_object_set_data_full(G_OBJECT(button), "xml_content", nfe_files[i], g_free);
-        g_object_set_data_full(G_OBJECT(button), "json_content", json_content, g_free);
-        g_signal_connect(button, "clicked", G_CALLBACK(on_nf_clicked), views);
-        gtk_box_pack_start(GTK_BOX(list_vbox), button, FALSE, FALSE, 0);
+        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Open NFE %d", i + 1));
+        g_signal_connect(button, "clicked", G_CALLBACK(on_nf_clicked), g_strdup(nfe_files[i]));
+        gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
     }
+}
+
+void display_product_data(const char *product_json)
+{
+    json_error_t error;
+    json_t *root = json_loads(product_json, 0, &error);
+    if (!root)
+    {
+        fprintf(stderr, "Error parsing JSON: %s\n", error.text);
+        return;
+    }
+
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Product Details");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 600);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE); // Disable resizing
+
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(window), scrollable_view);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    GtkWidget *text_view = gtk_text_view_new();
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_view), FALSE);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, product_json, -1);
+    gtk_box_pack_start(GTK_BOX(vbox), text_view, TRUE, TRUE, 0);
+
+    gtk_widget_show_all(window);
+    json_decref(root);
+}
+
+void on_product_button_clicked(GtkButton *button, gpointer user_data)
+{
+    const char *product_json = (const char *)user_data;
+    display_product_data(product_json);
 }
 
 void set_tab2_content(GtkWidget *tab_view)
 {
-    GtkWidget *label = gtk_label_new("Conteúdo específico da Aba 2");
-    gtk_box_pack_start(GTK_BOX(tab_view), label, TRUE, TRUE, 0);
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(tab_view), scrollable_view, TRUE, TRUE, 0);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    char *nfe_files[] = {
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (!nfe_files[i])
+        {
+            fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
+            continue;
+        }
+
+        json_error_t error;
+        json_t *root = json_loads(nfe_files[i], 0, &error);
+        if (!root)
+        {
+            fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
+            free(nfe_files[i]);
+            continue;
+        }
+
+        json_t *nfeProc = json_object_get(root, "nfeProc");
+        json_t *NFe = json_object_get(nfeProc, "NFe");
+        json_t *infNFe = json_object_get(NFe, "infNFe");
+        json_t *det = json_object_get(infNFe, "det");
+
+        json_t *product_data = json_array();
+        if (json_is_array(det))
+        {
+            size_t index;
+            json_t *item;
+            json_array_foreach(det, index, item)
+            {
+                json_t *prod = json_object_get(item, "prod");
+                json_array_append(product_data, prod);
+            }
+        }
+        else
+        {
+            json_t *prod = json_object_get(det, "prod");
+            json_array_append(product_data, prod);
+        }
+
+        char *product_json = json_dumps(product_data, JSON_INDENT(4));
+        json_decref(product_data);
+
+        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Open Products for NFE %d", i + 1));
+        g_signal_connect(button, "clicked", G_CALLBACK(on_product_button_clicked), g_strdup(product_json));
+        gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+
+        json_decref(root);
+        free(nfe_files[i]);
+    }
+}
+
+void display_all_products(const char *all_products_json)
+{
+    json_error_t error;
+    json_t *root = json_loads(all_products_json, 0, &error);
+    if (!root)
+    {
+        fprintf(stderr, "Error parsing JSON: %s\n", error.text);
+        return;
+    }
+
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "All Products");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 600);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE); // Disable resizing
+
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(window), scrollable_view);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    GtkWidget *text_view = gtk_text_view_new();
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_view), FALSE);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, all_products_json, -1);
+    gtk_box_pack_start(GTK_BOX(vbox), text_view, TRUE, TRUE, 0);
+
+    gtk_widget_show_all(window);
+    json_decref(root);
+}
+
+void on_all_products_button_clicked(GtkButton *button, gpointer user_data)
+{
+    const char *all_products_json = (const char *)user_data;
+    display_all_products(all_products_json);
 }
 
 void set_tab3_content(GtkWidget *tab_view)
 {
-    GtkWidget *label = gtk_label_new("Conteúdo específico da Aba 3");
-    gtk_box_pack_start(GTK_BOX(tab_view), label, TRUE, TRUE, 0);
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(tab_view), scrollable_view, TRUE, TRUE, 0);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    json_t *all_products = json_array();
+
+    char *nfe_files[] = {
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (!nfe_files[i])
+        {
+            fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
+            continue;
+        }
+
+        json_error_t error;
+        json_t *root = json_loads(nfe_files[i], 0, &error);
+        if (!root)
+        {
+            fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
+            free(nfe_files[i]);
+            continue;
+        }
+
+        json_t *nfeProc = json_object_get(root, "nfeProc");
+        json_t *NFe = json_object_get(nfeProc, "NFe");
+        json_t *infNFe = json_object_get(NFe, "infNFe");
+        json_t *det = json_object_get(infNFe, "det");
+
+        if (json_is_array(det))
+        {
+            size_t index;
+            json_t *item;
+            json_array_foreach(det, index, item)
+            {
+                json_t *prod = json_object_get(item, "prod");
+                json_array_append(all_products, prod);
+            }
+        }
+        else
+        {
+            json_t *prod = json_object_get(det, "prod");
+            json_array_append(all_products, prod);
+        }
+
+        json_decref(root);
+        free(nfe_files[i]);
+    }
+
+    char *all_products_json = json_dumps(all_products, JSON_INDENT(4));
+    json_decref(all_products);
+
+    GtkWidget *button = gtk_button_new_with_label("Open All Products");
+    g_signal_connect(button, "clicked", G_CALLBACK(on_all_products_button_clicked), g_strdup(all_products_json));
+    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+}
+
+int compare_products(const void *a, const void *b)
+{
+    json_t *prod_a = *(json_t **)a;
+    json_t *prod_b = *(json_t **)b;
+
+    const char *name_a = json_string_value(json_object_get(prod_a, "xProd"));
+    const char *name_b = json_string_value(json_object_get(prod_b, "xProd"));
+
+    return g_strcmp0(name_a, name_b);
+}
+
+void display_sorted_products(const char *sorted_products_json)
+{
+    json_error_t error;
+    json_t *root = json_loads(sorted_products_json, 0, &error);
+    if (!root)
+    {
+        fprintf(stderr, "Error parsing JSON: %s\n", error.text);
+        return;
+    }
+
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Sorted Products");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 600);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(window), scrollable_view);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    GtkWidget *text_view = gtk_text_view_new();
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_view), FALSE);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, sorted_products_json, -1);
+    gtk_box_pack_start(GTK_BOX(vbox), text_view, TRUE, TRUE, 0);
+
+    gtk_widget_show_all(window);
+    json_decref(root);
+}
+
+void on_sorted_products_button_clicked(GtkButton *button, gpointer user_data)
+{
+    const char *sorted_products_json = (const char *)user_data;
+    display_sorted_products(sorted_products_json);
 }
 
 void set_tab4_content(GtkWidget *tab_view)
 {
-    GtkWidget *label = gtk_label_new("Conteúdo específico da Aba 4");
-    gtk_box_pack_start(GTK_BOX(tab_view), label, TRUE, TRUE, 0);
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(tab_view), scrollable_view, TRUE, TRUE, 0);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    char *nfe_files[] = {
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (!nfe_files[i])
+        {
+            fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
+            continue;
+        }
+
+        json_error_t error;
+        json_t *root = json_loads(nfe_files[i], 0, &error);
+        if (!root)
+        {
+            fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
+            free(nfe_files[i]);
+            continue;
+        }
+
+        json_t *nfeProc = json_object_get(root, "nfeProc");
+        json_t *NFe = json_object_get(nfeProc, "NFe");
+        json_t *infNFe = json_object_get(NFe, "infNFe");
+        json_t *det = json_object_get(infNFe, "det");
+
+        json_t *product_data = json_array();
+        if (json_is_array(det))
+        {
+            size_t index;
+            json_t *item;
+            json_array_foreach(det, index, item)
+            {
+                json_t *prod = json_object_get(item, "prod");
+                json_array_append(product_data, prod);
+            }
+        }
+        else
+        {
+            json_t *prod = json_object_get(det, "prod");
+            json_array_append(product_data, prod);
+        }
+
+        size_t product_count = json_array_size(product_data);
+        json_t **products = malloc(product_count * sizeof(json_t *));
+        for (size_t j = 0; j < product_count; j++)
+        {
+            products[j] = json_array_get(product_data, j);
+        }
+
+        qsort(products, product_count, sizeof(json_t *), compare_products);
+
+        json_t *sorted_product_data = json_array();
+        for (size_t j = 0; j < product_count; j++)
+        {
+            json_array_append(sorted_product_data, products[j]);
+        }
+
+        free(products);
+
+        char *sorted_products_json = json_dumps(sorted_product_data, JSON_INDENT(4));
+        json_decref(sorted_product_data);
+
+        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Open Sorted Products for NFE %d", i + 1));
+        g_signal_connect(button, "clicked", G_CALLBACK(on_sorted_products_button_clicked), g_strdup(sorted_products_json));
+        gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+
+        json_decref(root);
+        free(nfe_files[i]);
+    }
+}
+
+int compare_products_by_price(const void *a, const void *b)
+{
+    json_t *prod_a = *(json_t **)a;
+    json_t *prod_b = *(json_t **)b;
+
+    double price_a = atof(json_string_value(json_object_get(prod_a, "vProd")));
+    double price_b = atof(json_string_value(json_object_get(prod_b, "vProd")));
+
+    return (price_a > price_b) - (price_a < price_b);
+}
+
+void display_final_xml(const char *final_xml_json)
+{
+    json_error_t error;
+    json_t *root = json_loads(final_xml_json, 0, &error);
+    if (!root)
+    {
+        fprintf(stderr, "Error parsing JSON: %s\n", error.text);
+        return;
+    }
+
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Final XML");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 600);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE); // Disable resizing
+
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(window), scrollable_view);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    GtkWidget *text_view = gtk_text_view_new();
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_view), FALSE);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, final_xml_json, -1);
+    gtk_box_pack_start(GTK_BOX(vbox), text_view, TRUE, TRUE, 0);
+
+    gtk_widget_show_all(window);
+    json_decref(root);
+}
+
+void on_final_xml_button_clicked(GtkButton *button, gpointer user_data)
+{
+    const char *final_xml_json = (const char *)user_data;
+    display_final_xml(final_xml_json);
 }
 
 void set_tab5_content(GtkWidget *tab_view)
 {
-    GtkWidget *label = gtk_label_new("Conteúdo específico da Aba 5");
-    gtk_box_pack_start(GTK_BOX(tab_view), label, TRUE, TRUE, 0);
+    GtkWidget *scrollable_view = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollable_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(tab_view), scrollable_view, TRUE, TRUE, 0);
+
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
+
+    json_t *all_products = json_array();
+    json_t *sample_nfe = NULL;
+
+    char *nfe_files[] = {
+        xml_to_json(read_file("notas/NFE1.xml")),
+        xml_to_json(read_file("notas/NFE2.xml")),
+        xml_to_json(read_file("notas/NFE3.xml")),
+        xml_to_json(read_file("notas/NFE4.xml")),
+        xml_to_json(read_file("notas/NFE5.xml")),
+        xml_to_json(read_file("notas/NFE6.xml"))};
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (!nfe_files[i])
+        {
+            fprintf(stderr, "Error converting XML to JSON for NFE%d\n", i + 1);
+            continue;
+        }
+
+        json_error_t error;
+        json_t *root = json_loads(nfe_files[i], 0, &error);
+        if (!root)
+        {
+            fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
+            free(nfe_files[i]);
+            continue;
+        }
+
+        if (!sample_nfe)
+        {
+            sample_nfe = json_deep_copy(root);
+        }
+
+        json_t *nfeProc = json_object_get(root, "nfeProc");
+        json_t *NFe = json_object_get(nfeProc, "NFe");
+        json_t *infNFe = json_object_get(NFe, "infNFe");
+        json_t *det = json_object_get(infNFe, "det");
+
+        if (json_is_array(det))
+        {
+            size_t index;
+            json_t *item;
+            json_array_foreach(det, index, item)
+            {
+                json_t *prod = json_object_get(item, "prod");
+                json_array_append(all_products, prod);
+            }
+        }
+        else
+        {
+            json_t *prod = json_object_get(det, "prod");
+            json_array_append(all_products, prod);
+        }
+
+        json_decref(root);
+        free(nfe_files[i]);
+    }
+
+    size_t product_count = json_array_size(all_products);
+    json_t **products = malloc(product_count * sizeof(json_t *));
+    for (size_t j = 0; j < product_count; j++)
+    {
+        products[j] = json_array_get(all_products, j);
+    }
+
+    qsort(products, product_count, sizeof(json_t *), compare_products_by_price);
+
+    json_t *sorted_product_data = json_array();
+    for (size_t j = 0; j < product_count; j++)
+    {
+        json_array_append(sorted_product_data, products[j]);
+    }
+
+    free(products);
+
+    json_t *final_nfe = json_object_get(sample_nfe, "nfeProc");
+    json_t *final_NFe = json_object_get(final_nfe, "NFe");
+    json_t *final_infNFe = json_object_get(final_NFe, "infNFe");
+    json_object_set(final_infNFe, "det", sorted_product_data);
+
+    char *final_xml_json = json_dumps(sample_nfe, JSON_INDENT(4));
+    json_decref(sample_nfe);
+
+    GtkWidget *button = gtk_button_new_with_label("Open Final XML");
+    g_signal_connect(button, "clicked", G_CALLBACK(on_final_xml_button_clicked), g_strdup(final_xml_json));
+    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
 }
 
 void add_tab_views(GtkNotebook *notebook)

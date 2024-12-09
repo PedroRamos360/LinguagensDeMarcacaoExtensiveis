@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include "button_events.h"
 #include "dashboard.h"
+#include "transformations.h"
 
 static void on_dashboard_button_clicked(GtkButton *button, gpointer user_data)
 {
@@ -14,6 +15,12 @@ static void on_back_button_clicked(GtkButton *button, gpointer user_data)
     gtk_stack_set_visible_child_name(stack, "main-view");
 }
 
+static void on_transformations_button_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkStack *stack = GTK_STACK(user_data);
+    gtk_stack_set_visible_child_name(stack, "transformations-view");
+}
+
 GtkWidget *create_main_view(GtkStack *stack)
 {
     GtkWidget *grid = gtk_grid_new();
@@ -23,6 +30,7 @@ GtkWidget *create_main_view(GtkStack *stack)
     GtkWidget *convert_json_button = gtk_button_new_with_label("Converter NF-e para JSON");
     GtkWidget *dashboard_button = gtk_button_new_with_label("Dashboard");
     GtkWidget *validate_button = gtk_button_new_with_label("Validar");
+    GtkWidget *transformations_button = gtk_button_new_with_label("Transformações");
 
     GtkWidget *text_view;
     GtkWidget *schema_view;
@@ -32,8 +40,9 @@ GtkWidget *create_main_view(GtkStack *stack)
     gtk_grid_attach(GTK_GRID(grid), load_button, 0, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), load_schema, 2, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), convert_json_button, 4, 0, 2, 1);
-    gtk_grid_attach(GTK_GRID(grid), dashboard_button, 6, 0, 2, 1);
-    gtk_grid_attach(GTK_GRID(grid), validate_button, 8, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), dashboard_button, 6, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), validate_button, 7, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), transformations_button, 8, 0, 2, 1);
 
     text_view = gtk_text_view_new();
     gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
@@ -65,6 +74,7 @@ GtkWidget *create_main_view(GtkStack *stack)
     g_signal_connect(convert_json_button, "clicked", G_CALLBACK(on_convert_button_clicked), text_view);
     g_signal_connect(load_schema, "clicked", G_CALLBACK(on_load_schema_clicked), schema_view);
     g_signal_connect(validate_button, "clicked", G_CALLBACK(on_validate_button_clicked), schema_view);
+    g_signal_connect(transformations_button, "clicked", G_CALLBACK(on_transformations_button_clicked), stack);
     gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 2, 10, 1);
 
     return grid;
@@ -81,9 +91,11 @@ static void on_app_activate(GApplication *app, gpointer user_data)
 
     GtkWidget *main_view = create_main_view(GTK_STACK(stack));
     GtkWidget *dashboard_view = create_dashboard_view(GTK_STACK(stack));
+    GtkWidget *transformations_view = create_transformations_view(GTK_STACK(stack));
 
     gtk_stack_add_titled(GTK_STACK(stack), main_view, "main-view", "Main View");
     gtk_stack_add_titled(GTK_STACK(stack), dashboard_view, "dashboard-view", "Dashboard View");
+    gtk_stack_add_titled(GTK_STACK(stack), transformations_view, "transformations-view", "Transformations View");
 
     gtk_stack_set_visible_child_name(GTK_STACK(stack), "main-view");
 

@@ -72,7 +72,7 @@ void set_tab1_content(GtkWidget *tab_view)
             continue;
         }
 
-        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Open NFE %d", i + 1));
+        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Abrir NFE %d", i + 1));
         g_signal_connect(button, "clicked", G_CALLBACK(on_nf_clicked), g_strdup(nfe_files[i]));
         gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
     }
@@ -176,7 +176,7 @@ void set_tab2_content(GtkWidget *tab_view)
         char *product_json = json_dumps(product_data, JSON_INDENT(4));
         json_decref(product_data);
 
-        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Open Products for NFE %d", i + 1));
+        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Abrir produtos para NFE %d", i + 1));
         g_signal_connect(button, "clicked", G_CALLBACK(on_product_button_clicked), g_strdup(product_json));
         gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
 
@@ -288,7 +288,7 @@ void set_tab3_content(GtkWidget *tab_view)
     char *all_products_json = json_dumps(all_products, JSON_INDENT(4));
     json_decref(all_products);
 
-    GtkWidget *button = gtk_button_new_with_label("Open All Products");
+    GtkWidget *button = gtk_button_new_with_label("Abrir todos produtos");
     g_signal_connect(button, "clicked", G_CALLBACK(on_all_products_button_clicked), g_strdup(all_products_json));
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
 }
@@ -298,8 +298,11 @@ int compare_products(const void *a, const void *b)
     json_t *prod_a = *(json_t **)a;
     json_t *prod_b = *(json_t **)b;
 
-    const char *name_a = json_string_value(json_object_get(prod_a, "xProd"));
-    const char *name_b = json_string_value(json_object_get(prod_b, "xProd"));
+    json_t *xProd_a = json_object_get(prod_a, "xProd");
+    json_t *xProd_b = json_object_get(prod_b, "xProd");
+
+    const char *name_a = json_string_value(json_object_get(xProd_a, "#text"));
+    const char *name_b = json_string_value(json_object_get(xProd_b, "#text"));
 
     return g_strcmp0(name_a, name_b);
 }
@@ -419,7 +422,7 @@ void set_tab4_content(GtkWidget *tab_view)
         char *sorted_products_json = json_dumps(sorted_product_data, JSON_INDENT(4));
         json_decref(sorted_product_data);
 
-        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Open Sorted Products for NFE %d", i + 1));
+        GtkWidget *button = gtk_button_new_with_label(g_strdup_printf("Abrir produtos ordenados por NFE %d", i + 1));
         g_signal_connect(button, "clicked", G_CALLBACK(on_sorted_products_button_clicked), g_strdup(sorted_products_json));
         gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
 
@@ -433,8 +436,11 @@ int compare_products_by_price(const void *a, const void *b)
     json_t *prod_a = *(json_t **)a;
     json_t *prod_b = *(json_t **)b;
 
-    double price_a = atof(json_string_value(json_object_get(prod_a, "vProd")));
-    double price_b = atof(json_string_value(json_object_get(prod_b, "vProd")));
+    json_t *vProd_a = json_object_get(prod_a, "vProd");
+    json_t *vProd_b = json_object_get(prod_b, "vProd");
+
+    double price_a = atof(json_string_value(json_object_get(vProd_a, "#text")));
+    double price_b = atof(json_string_value(json_object_get(vProd_b, "#text")));
 
     return (price_a > price_b) - (price_a < price_b);
 }
@@ -487,9 +493,6 @@ void set_tab5_content(GtkWidget *tab_view)
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(scrollable_view), vbox);
 
-    json_t *all_products = json_array();
-    json_t *sample_nfe = NULL;
-
     char *nfe_files[] = {
         xml_to_json(read_file("notas/NFE1.xml")),
         xml_to_json(read_file("notas/NFE2.xml")),
@@ -497,6 +500,8 @@ void set_tab5_content(GtkWidget *tab_view)
         xml_to_json(read_file("notas/NFE4.xml")),
         xml_to_json(read_file("notas/NFE5.xml")),
         xml_to_json(read_file("notas/NFE6.xml"))};
+
+    json_t *all_products = json_array();
 
     for (int i = 0; i < 6; i++)
     {
@@ -513,11 +518,6 @@ void set_tab5_content(GtkWidget *tab_view)
             fprintf(stderr, "Error parsing JSON for NFE%d: %s\n", i + 1, error.text);
             free(nfe_files[i]);
             continue;
-        }
-
-        if (!sample_nfe)
-        {
-            sample_nfe = json_deep_copy(root);
         }
 
         json_t *nfeProc = json_object_get(root, "nfeProc");
@@ -562,45 +562,35 @@ void set_tab5_content(GtkWidget *tab_view)
 
     free(products);
 
-    json_t *final_nfe = json_object_get(sample_nfe, "nfeProc");
-    json_t *final_NFe = json_object_get(final_nfe, "NFe");
-    json_t *final_infNFe = json_object_get(final_NFe, "infNFe");
-    json_object_set(final_infNFe, "det", sorted_product_data);
+    char *sorted_products_json = json_dumps(sorted_product_data, JSON_INDENT(4));
+    json_decref(sorted_product_data);
 
-    char *final_xml_json = json_dumps(sample_nfe, JSON_INDENT(4));
-    json_decref(sample_nfe);
-
-    GtkWidget *button = gtk_button_new_with_label("Open Final XML");
-    g_signal_connect(button, "clicked", G_CALLBACK(on_final_xml_button_clicked), g_strdup(final_xml_json));
+    GtkWidget *button = gtk_button_new_with_label("Abrir produtos ordenados por preço");
+    g_signal_connect(button, "clicked", G_CALLBACK(on_sorted_products_button_clicked), g_strdup(sorted_products_json));
     gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
 }
 
 void add_tab_views(GtkNotebook *notebook)
 {
-    for (int i = 1; i <= 5; i++)
-    {
-        GtkWidget *tab_view = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-        gtk_notebook_append_page(notebook, tab_view, gtk_label_new(g_strdup_printf("Aba %d", i)));
+    GtkWidget *tab1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_notebook_append_page(notebook, tab1, gtk_label_new("XML para JSON"));
+    set_tab1_content(tab1);
 
-        switch (i)
-        {
-        case 1:
-            set_tab1_content(tab_view);
-            break;
-        case 2:
-            set_tab2_content(tab_view);
-            break;
-        case 3:
-            set_tab3_content(tab_view);
-            break;
-        case 4:
-            set_tab4_content(tab_view);
-            break;
-        case 5:
-            set_tab5_content(tab_view);
-            break;
-        }
-    }
+    GtkWidget *tab2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_notebook_append_page(notebook, tab2, gtk_label_new("Produtos"));
+    set_tab2_content(tab2);
+
+    GtkWidget *tab3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_notebook_append_page(notebook, tab3, gtk_label_new("Todos produtos"));
+    set_tab3_content(tab3);
+
+    GtkWidget *tab4 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_notebook_append_page(notebook, tab4, gtk_label_new("Produtos ordenados alfabeticamente"));
+    set_tab4_content(tab4);
+
+    GtkWidget *tab5 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_notebook_append_page(notebook, tab5, gtk_label_new("Todos produtos ordenados por preço"));
+    set_tab5_content(tab5);
 }
 
 GtkWidget *create_transformations_view(GtkStack *stack)

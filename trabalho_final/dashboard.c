@@ -69,8 +69,6 @@ void add_general_view(GtkNotebook *notebook)
             json_t *ICMSTot = json_object_get(total, "ICMSTot");
             json_t *vTotTrib = json_object_get(ICMSTot, "vTotTrib");
             json_t *vicms_text = json_object_get(vTotTrib, "#text");
-            printf("vicms_text: %s\n", json_string_value(vicms_text));
-            printf("vicms atof: %.2f\n", atof(json_string_value(vicms_text)));
             total_taxes += atof(json_string_value(vicms_text));
         }
 

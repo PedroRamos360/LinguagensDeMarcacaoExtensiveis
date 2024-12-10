@@ -2,19 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "validate_json.h"
 
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
-void print_error(const char *message, const char *key, json_t *value)
+void print_error_with_line(const char *message, int offset, const char *content)
 {
-    char *json_str = json_dumps(value, JSON_INDENT(2));
-    printf("%sError: %s%s\n", ANSI_COLOR_RED, message, ANSI_COLOR_RESET);
-    printf("Key: %s\n", key);
-    printf("Value: %s\n", json_str);
-    free(json_str); // Make sure to free the memory allocated by json_dump
+    int line_number = 1;
+    for (int i = 0; i < offset; i++)
+    {
+        if (content[i] == '\n')
+        {
+            line_number++;
+        }
+    }
+    printf("%sError on line %d: %s%s\n", ANSI_COLOR_RED, line_number, message, ANSI_COLOR_RESET);
 }
 
 void print_success(const char *message)
@@ -68,7 +71,7 @@ char *read_file(const char *filename)
     return content;
 }
 
-int validate_json_recursive(json_t *instance, json_t *schema)
+int validate_json_recursive(json_t *instance, json_t *schema, const char *content)
 {
     const char *key;
     json_t *value;
@@ -89,7 +92,36 @@ int validate_json_recursive(json_t *instance, json_t *schema)
                     char error_message[256];
                     snprintf(error_message, sizeof(error_message),
                              "Type mismatch: Expected %s.", expected_type);
-                    print_error(error_message, key, value);
+                    print_error_with_line(error_message, 0, content);
+                    return 0;
+                }
+            }
+            else if (json_is_array(value))
+            {
+                size_t index;
+                json_t *allowed_type;
+                int valid = 0;
+
+                json_array_foreach(value, index, allowed_type)
+                {
+                    const char *type_str = json_string_value(allowed_type);
+                    if ((strcmp(type_str, "object") == 0 && json_is_object(instance)) ||
+                        (strcmp(type_str, "array") == 0 && json_is_array(instance)) ||
+                        (strcmp(type_str, "string") == 0 && json_is_string(instance)) ||
+                        (strcmp(type_str, "integer") == 0 && json_is_integer(instance)) ||
+                        (strcmp(type_str, "number") == 0 && json_is_number(instance)))
+                    {
+                        valid = 1;
+                        break;
+                    }
+                }
+
+                if (!valid)
+                {
+                    char error_message[256];
+                    snprintf(error_message, sizeof(error_message),
+                             "Type mismatch: Expected one of the union types.");
+                    print_error_with_line(error_message, 0, content);
                     return 0;
                 }
             }
@@ -98,7 +130,7 @@ int validate_json_recursive(json_t *instance, json_t *schema)
         {
             if (!json_is_object(instance))
             {
-                print_error("Expected an object for validating properties.", key, value);
+                print_error_with_line("Expected an object for validating properties.", 0, content);
                 return 0;
             }
 
@@ -111,7 +143,7 @@ int validate_json_recursive(json_t *instance, json_t *schema)
                 json_t *prop_value = json_object_get(instance, prop_key);
                 if (prop_value)
                 {
-                    if (!validate_json_recursive(prop_value, prop_schema))
+                    if (!validate_json_recursive(prop_value, prop_schema, content))
                     {
                         return 0; // Propagate failure
                     }
@@ -122,7 +154,7 @@ int validate_json_recursive(json_t *instance, json_t *schema)
         {
             if (!json_is_array(value))
             {
-                print_error("Invalid schema: 'required' must be an array.", key, value);
+                print_error_with_line("Invalid schema: 'required' must be an array.", 0, content);
                 return 0;
             }
 
@@ -136,7 +168,7 @@ int validate_json_recursive(json_t *instance, json_t *schema)
                     char error_message[256];
                     snprintf(error_message, sizeof(error_message),
                              "Missing required property: %s.", required_key_str);
-                    print_error(error_message, key, value);
+                    print_error_with_line(error_message, 0, content);
                     return 0;
                 }
             }
@@ -145,7 +177,7 @@ int validate_json_recursive(json_t *instance, json_t *schema)
         {
             if (!json_is_array(instance))
             {
-                print_error("Expected an array for validating items.", key, value);
+                print_error_with_line("Expected an array for validating items.", 0, content);
                 return 0;
             }
 
@@ -153,20 +185,67 @@ int validate_json_recursive(json_t *instance, json_t *schema)
             json_t *item;
             json_array_foreach(instance, index, item)
             {
-                if (!validate_json_recursive(item, value))
+                if (!validate_json_recursive(item, value, content))
                 {
                     char error_message[256];
                     snprintf(error_message, sizeof(error_message),
                              "Validation failed for array item at index %zu.", index);
-                    print_error(error_message, key, value);
+                    print_error_with_line(error_message, 0, content);
                     return 0;
                 }
             }
         }
-        // Handle other schema properties (like 'additionalProperties', etc.)
         else if (strcmp(key, "additionalProperties") == 0)
         {
-            // Handle logic if needed (depends on your schema)
+            if (json_is_boolean(value))
+            {
+                // If additionalProperties is false, ensure no extra properties exist
+                if (!json_boolean_value(value))
+                {
+                    const char *instance_key;
+                    json_t *instance_value;
+
+                    json_object_foreach(instance, instance_key, instance_value)
+                    {
+                        // Check if the property is defined in "properties"
+                        if (!json_object_get(schema, "properties") ||
+                            !json_object_get(json_object_get(schema, "properties"), instance_key))
+                        {
+                            char error_message[256];
+                            snprintf(error_message, sizeof(error_message),
+                                     "Additional property '%s' is not allowed.", instance_key);
+                            print_error_with_line(error_message, 0, content);
+                            return 0;
+                        }
+                    }
+                }
+            }
+            else if (json_is_object(value))
+            {
+                // If additionalProperties is a schema, validate each extra property
+                const char *instance_key;
+                json_t *instance_value;
+
+                json_object_foreach(instance, instance_key, instance_value)
+                {
+                    // Skip properties defined in "properties"
+                    if (json_object_get(schema, "properties") &&
+                        json_object_get(json_object_get(schema, "properties"), instance_key))
+                    {
+                        continue;
+                    }
+
+                    // Validate additional property against the additionalProperties schema
+                    if (!validate_json_recursive(instance_value, value, content))
+                    {
+                        char error_message[256];
+                        snprintf(error_message, sizeof(error_message),
+                                 "Validation failed for additional property '%s'.", instance_key);
+                        print_error_with_line(error_message, 0, content);
+                        return 0;
+                    }
+                }
+            }
         }
     }
 
@@ -175,27 +254,36 @@ int validate_json_recursive(json_t *instance, json_t *schema)
 
 int validate_json(const char *instance_str, const char *schema_str)
 {
-    return 1;
+    char *content = strdup(instance_str);
+    if (!content)
+    {
+        fprintf(stderr, "Failed to duplicate input content.\n");
+        return 0;
+    }
+
     json_error_t error;
     json_t *instance = json_loads(instance_str, 0, &error);
     if (!instance)
     {
-        print_error(error.text, "", NULL);
+        print_error_with_line(error.text, error.position, content);
+        free(content);
         return 0;
     }
 
     json_t *schema = json_loads(schema_str, 0, &error);
     if (!schema)
     {
-        print_error(error.text, "", NULL);
+        print_error_with_line(error.text, error.position, content);
         json_decref(instance);
+        free(content);
         return 0;
     }
 
-    int result = validate_json_recursive(instance, schema);
+    int result = validate_json_recursive(instance, schema, content);
 
     json_decref(instance);
     json_decref(schema);
+    free(content);
 
     if (result)
     {

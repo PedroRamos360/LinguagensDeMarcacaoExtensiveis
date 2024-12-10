@@ -22,10 +22,6 @@ int main()
         int result = validate_json(instance, schema);
     }
 
-    char *main_instance = read_file("input.json");
-    char *main_schema = read_file("schema.json");
-    int result = validate_json(main_instance, main_schema);
-
     print_failure("\n========== SHOULD FAIL TESTS ==========\n");
     for (int i = 1; i <= 4; i++)
     {
